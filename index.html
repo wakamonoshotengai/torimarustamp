@@ -187,7 +187,7 @@
           <div class="w-7 h-7 rounded-xl bg-orange-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">1</div>
           <div>
             <p class="font-bold text-gray-800">商店街のお店を巡ろう！</p>
-            <p class="text-[11px] text-gray-600 mt-0.5">参加店舗16店舗のポスターにある専用QRコードをスマホで読み込みます。</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">参加店舗16店舗のポスターにある専用QRコードを現地（100m以内）でスキャンします。</p>
           </div>
         </div>
 
@@ -203,7 +203,7 @@
           <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">3</div>
           <div>
             <p class="font-bold text-gray-800">5個集めて500円券と交換！</p>
-            <p class="text-[11px] text-gray-600 mt-0.5">スタンプが5個集まったら、「特典換金」画面に表示されるQRコードを交換場所のスタッフに見せよう！（先着200名様）</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">スタンプが5個集まったら、「まちパル鳥取」のスタッフに特典換金画面のQRコードを見せよう！（先着200名様）</p>
           </div>
         </div>
       </div>
@@ -233,13 +233,20 @@
       <div class="stamp-grid" id="stamp-grid"></div>
     </section>
 
-    <section class="bg-gradient-to-r from-red-500 to-orange-500 p-4 rounded-2xl text-white shadow-lg text-center space-y-2">
+    <!-- カメラ起動エリア -->
+    <section id="scanner-section" class="bg-gradient-to-r from-red-500 to-orange-500 p-4 rounded-2xl text-white shadow-lg text-center space-y-2">
       <h3 class="font-bold text-sm">店頭ポスターのQRでスタンプGET！</h3>
-      <p class="text-xs text-white/90">下のボタンを押してカメラをQRコードにかざしてください。</p>
+      <p class="text-xs text-white/90">お店の近く（100m以内）でカメラをかざしてください。</p>
       
       <button onclick="startCameraScanner()" class="w-full bg-white text-red-600 font-extrabold py-3 px-4 rounded-xl text-sm shadow-md flex items-center justify-center gap-2 hover:bg-orange-50 active:scale-95 transition">
         <i class="fa-solid fa-camera text-lg"></i> カメラでQRコードをスキャン
       </button>
+    </section>
+
+    <!-- 引換完了後の通知メッセージ（カードタブ） -->
+    <section id="scanner-completed-message" class="hidden bg-slate-800 text-white p-4 rounded-2xl text-center space-y-1 shadow-md">
+      <p class="text-xs font-bold text-amber-400"><i class="fa-solid fa-circle-check"></i> 特典引き換え完了済み</p>
+      <p class="text-[11px] text-slate-300">スタンプラリー特典の引き換えが完了したため、QRコードのスキャン機能は終了いたしました。ご参加ありがとうございました！</p>
     </section>
 
     <section class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
@@ -304,29 +311,38 @@
         </p>
       </div>
 
+      <!-- 動的表示ボックス（交換前／交換後） -->
       <div id="reward-claim-box" class="pt-2"></div>
     </div>
 
-    <!-- メイン引き換え場所 -->
-    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2">
+    <!-- 換金場所の詳細案内 -->
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
       <div class="flex items-center gap-2 border-b pb-2 border-slate-100">
-        <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded">常設</span>
-        <h4 class="font-bold text-gray-800 text-sm">メイン引き換え場所</h4>
+        <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded">常設換金場所</span>
+        <h4 class="font-bold text-gray-800 text-sm">まちパル鳥取 ふるさと物産館</h4>
       </div>
-      <div class="text-xs space-y-1.5 text-slate-700 pl-1">
+      <div class="text-xs space-y-2 text-slate-700 pl-1">
         <p class="flex items-start gap-2">
           <i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i>
-          <span><strong>場所：</strong>まちパル鳥取 ふるさと物産館</span>
+          <span><strong>場所：</strong>鳥取市本通り（鳥取市本町1丁目104 まちパル鳥取 1F）</span>
         </p>
         <p class="flex items-start gap-2">
           <i class="fa-solid fa-calendar-days text-orange-500 mt-0.5"></i>
-          <span><strong>期間：</strong>2026/10/25(日)〜2026/12/06(日)</span>
+          <span><strong>換金期間：</strong>2026年10月25日(日) 〜 12月6日(日)</span>
         </p>
         <p class="flex items-start gap-2">
           <i class="fa-solid fa-clock text-amber-500 mt-0.5"></i>
-          <span><strong>時間：</strong>9:00〜19:00<br><span class="text-[10px] text-slate-500">※物産館の営業時間に準じます（イベント期間中の営業時間はいつでも交換可能です）。</span></span>
+          <span><strong>受付時間：</strong>9:00 〜 19:00<br><span class="text-[10px] text-slate-500">※イベント期間中はいつでも交換可能です。</span></span>
+        </p>
+        <p class="flex items-start gap-2">
+          <i class="fa-solid fa-mobile-screen-button text-emerald-500 mt-0.5"></i>
+          <span><strong>換金方法：</strong>スタッフに上記の提示用QRコードをお見せください。</span>
         </p>
       </div>
+
+      <a href="https://maps.google.com/?q=35.496021,134.228630" target="_blank" rel="noopener noreferrer" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
+        <i class="fa-solid fa-map-location-dot text-sm"></i> まちパル鳥取の場所（Googleマップ）を開く
+      </a>
     </div>
 
     <!-- 注意事項 -->
@@ -336,8 +352,8 @@
       </h4>
       <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside leading-relaxed pl-1">
         <li>チケットの引換は原則１名様につき1回のみです。</li>
-        <li>特設ブース等引換時には、画面のQRコードを見せてください。</li>
-        <li>先着200名様に達し次第引き換えは終了となります。</li>
+        <li>引き換え完了後は、QRコードの再表示やスキャンはできなくなります。</li>
+        <li>先着200名様に達し次第、引き換えは終了となります。</li>
       </ul>
     </div>
   </div>
@@ -350,7 +366,7 @@
       <div class="space-y-2 text-xs">
         <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q1. 1日で5店舗まわらないと駄目ですか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 期間中（10/25〜12/6）であれば何日に分けて集めても大丈夫です。</p></details>
         <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q2. 参加費やアプリダウンロードは必要？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 参加費無料・アプリ不要でブラウザから参加できます。</p></details>
-        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q3. 特典（500円券）はどこで受け取れますか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. まちパル鳥取またはファミリーマート パレットとっとり店で交換できます。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q3. 特典（500円券）はどこで受け取れますか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 「まちパル鳥取 ふるさと物産館」にて交換できます。</p></details>
       </div>
       <button onclick="closeQAModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-xs">閉じる</button>
     </div>
@@ -434,30 +450,36 @@
   <script>
     const MY_LIFF_ID = "2012069860-oCSLG2tJ"; 
 
+    // ★ Googleスプレッドシート連携用GAS WebApp URL（設定済み） ★
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwDnO5auOoST6KQ18a_VKjQAbSYVPNrP2B14bRvgTW3YFlupgGQ_9bIy4UNr4MzvqOv-w/exec"; 
+
+    // 店舗一覧 ＆ 店舗許可取りシート1 (Column T) から抽出した厳密な緯度経度座標
     const stores = [
-      { id: "store_01", name: "砂田園茶舗", category: "食品店（お茶・日本茶）", secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです", detail: "店内にある貴重な歴史ある「5玉そろばん」。現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！", imageUrl: "砂田園.jpg", fallbackImage: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.498050,134.229800", siteUrl: "https://hondohri.com/store/193/" },
-      { id: "store_02", name: "ビストロ フライパン", category: "飲食店（フレンチ・洋食）", secret: "実は、鳥取で30年続く本格フレンチのお店", detail: "創業から変わらない秘伝の洋食ソースと手作りのフレンチコースが自慢の老舗ビストロです。", imageUrl: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497787,134.229887", siteUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==" },
-      { id: "store_03", name: "cafe SOURCE", category: "飲食店（カフェ・スイーツ）", secret: "実は初めて夜カフェ営業をしたお店", detail: "若い世代が集う鳥取本通り商店街のおしゃれカフェの先駆者。落ち着いた雰囲気のインテリアと旬のデザートが人気です。", imageUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497612,134.230290", siteUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==" },
-      { id: "store_04", name: "元気酒場 はれるや", category: "飲食店（居酒屋・和食）", secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなお店なんです", detail: "明るい接客と鳥取の新鮮な魚介・肉料理を楽しめる元気あふれる居酒屋です。", imageUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497787,134.229887", siteUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==" },
-      { id: "store_05", name: "dining&cafebar break", category: "飲食店（ダイニングバー・カフェ）", secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです", detail: "お昼のゆったりランチから夜のスタイリッシュなカクテルタイムまで幅広く楽しめるお店です。", imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497159,134.229753", siteUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==" },
-      { id: "store_06", name: "灯宴暁本店", category: "飲食店（和食・居酒屋）", secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です", detail: "職人が仕込む季節の和食と鳥取の地酒を落ち着いた和空間で堪能いただけます。", imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496250,134.228760", siteUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==" },
-      { id: "store_07", name: "和牛ステーキ千里", category: "飲食店（ステーキ・肉料理）", secret: "実は銀座で修業したシェフが焼いてます！", detail: "代表は東京銀座の会員制ステーキ店で修業した経歴を持ち、極上の焼きの技術で鳥取県産「東伯和牛」を提供しています！", imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==" },
-      { id: "store_08", name: "ふじもとカバン店", category: "物販（カバン・生活雑貨）", secret: "実は 創業75年 カバン専門店です", detail: "ランドセル・リュック・旅行用鞄などを幅広く販売。1県1店舗限定の歩行が軽快なスワニー商品やカバンの修理も承っています。", imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497350,134.229050", siteUrl: "" },
-      { id: "store_09", name: "(有)楠衡器製作所", category: "物販（専門技術・計量器）", secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です", detail: "精密なはかりや計測機器の販売・メンテナンスを行い、長年地域の商工業を支えています。", imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496490,134.229060", siteUrl: "https://hondohri.com/store/326/" },
-      { id: "store_10", name: "林ほんどおり薬局", category: "物販（薬局・ヘルスケア）", secret: "実はウチのカエル今年63才なんです", detail: "店頭で皆様を温かくお迎えする名物サトちゃんカエル像。地域の健康相談に優しく寄り添う頼れる薬局です。", imageUrl: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496670,134.229210", siteUrl: "https://toriyaku.jp/pharmacy/577/" },
-      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）", category: "物販（物産館・お土産）", secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです", detail: "鳥取のお土産や地産品が揃い、スタンプラリーの特典換金場所としても常設されている中心スポットです。", imageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496021,134.228630", siteUrl: "https://www.torican.jp/spot/detail_1068.html" },
-      { id: "store_12", name: "ファミリーマート パレットとっとり店", category: "物販（コンビニ・サービス）", secret: "実は以前業務スーパーの跡地に作られているので通常のコンビニより敷地面積が広いです", detail: "広々とした店内でお買い物しやすく、パレットとっとりの一角で地域の方々の憩いの場となっています。", imageUrl: "https://images.unsplash.com/photo-1601599561213-832382fd07ba?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://store.family.co.jp/points/38365" },
-      { id: "store_13", name: "金田氷店", category: "食品店（氷専門販売）", secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です", detail: "冷たくて美しい高品質な純氷を提供し、鳥取本通り商店街の食を影で支え続けています。", imageUrl: "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496780,134.229800", siteUrl: "https://hondohri.com/store/291/" },
-      { id: "store_14", name: "さんフレッシュいなば", category: "食品店（農産物直売・野菜）", secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です", detail: "JAいなば直販推進課が手掛ける直売所で、採れたての新鮮野菜や特産品をお届けしています。", imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675" },
-      { id: "store_15", name: "すぺーすComodo", category: "サービス（コミュニティ・子育て）", secret: "子どもだけじゃないの、大人も楽しいコモド", detail: "地域サポートネットワークとっとりが運営。子育てひろばやカルチャー教室、コミュニティカフェを併設し、子どもから大人まで集える温かい空間です。", imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496420,134.228980", siteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral" },
-      { id: "store_16", name: "五行易", category: "サービス（占い・相談）", secret: "実は易者です。30分4000円 姓名判断 手相 五行易 四柱推命 気学 一般運勢", detail: "個人情報保護・秘密厳守で親身に鑑定。開運祈祷、姓名判断、手相や運勢相談に応じる商店街の隠れた名スポットです。", imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://hondohri.com/store/306/" }
+      { id: "store_01", name: "砂田園茶舗", category: "食品店（お茶・日本茶）", secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです", detail: "店内にある貴重な歴史ある「5玉そろばん」。現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！", imageUrl: "砂田園.jpg", fallbackImage: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.498050,134.229800", siteUrl: "https://hondohri.com/store/193/", lat: 35.498050, lng: 134.229800 },
+      { id: "store_02", name: "ビストロ フライパン", category: "飲食店（フレンチ・洋食）", secret: "実は、鳥取で30年続く本格フレンチのお店", detail: "創業から変わらない秘伝の洋食ソースと手作りのフレンチコースが自慢の老舗ビストロです。", imageUrl: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497787,134.229887", siteUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", lat: 35.497787, lng: 134.229887 },
+      { id: "store_03", name: "cafe SOURCE", category: "飲食店（カフェ・スイーツ）", secret: "実は初めて夜カフェ営業をしたお店", detail: "若い世代が集う鳥取本通り商店街のおしゃれカフェの先駆者。落ち着いた雰囲気のインテリアと旬のデザートが人気です。", imageUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497612,134.230290", siteUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", lat: 35.497612, lng: 134.230290 },
+      { id: "store_04", name: "元気酒場 はれるや", category: "飲食店（居酒屋・和食）", secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなお店なんです", detail: "明るい接客と鳥取の新鮮な魚介・肉料理を楽しめる元気あふれる居酒屋です。", imageUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497787,134.229887", siteUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", lat: 35.497787, lng: 134.229887 },
+      { id: "store_05", name: "dining&cafebar break", category: "飲食店（ダイニングバー・カフェ）", secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです", detail: "お昼のゆったりランチから夜のスタイリッシュなカクテルタイムまで幅広く楽しめるお店です。", imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497159,134.229753", siteUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", lat: 35.497159, lng: 134.229753 },
+      { id: "store_06", name: "灯宴暁本店", category: "飲食店（和食・居酒屋）", secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です", detail: "職人が仕込む季節の和食と鳥取の地酒を落ち着いた和空間で堪能いただけます。", imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496250,134.228760", siteUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", lat: 35.496250, lng: 134.228760 },
+      { id: "store_07", name: "和牛ステーキ千里", category: "飲食店（ステーキ・肉料理）", secret: "実は銀座で修業したシェフが焼いてます！", detail: "代表は東京銀座の会員制ステーキ店で修業した経歴を持ち、極上の焼きの技術で鳥取県産「東伯和牛」を提供しています！", imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", lat: 35.496850, lng: 134.229550 },
+      { id: "store_08", name: "ふじもとカバン店", category: "物販（カバン・生活雑貨）", secret: "実は 創業75年 カバン専門店です", detail: "ランドセル・リュック・旅行用鞄などを幅広く販売。1県1店舗限定の歩行が軽快なスワニー商品やカバンの修理も承っています。", imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.497350,134.229050", siteUrl: "", lat: 35.497350, lng: 134.229050 },
+      { id: "store_09", name: "(有)楠衡器製作所", category: "物販（専門技術・計量器）", secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です", detail: "精密なはかりや計測機器の販売・メンテナンスを行い、長年地域の商工業を支えています。", imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496490,134.229060", siteUrl: "https://hondohri.com/store/326/", lat: 35.496490, lng: 134.229060 },
+      { id: "store_10", name: "林ほんどおり薬局", category: "物販（薬局・ヘルスケア）", secret: "実はウチのカエル今年63才なんです", detail: "店頭で皆様を温かくお迎えする名物サトちゃんカエル像。地域の健康相談に優しく寄り添う頼れる薬局です。", imageUrl: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496670,134.229210", siteUrl: "https://toriyaku.jp/pharmacy/577/", lat: 35.496670, lng: 134.229210 },
+      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）", category: "物販（物産館・お土産）", secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです", detail: "鳥取のお土産や地産品が揃い、スタンプラリーの特典換金場所としても常設されている中心スポットです。", imageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496021,134.228630", siteUrl: "https://www.torican.jp/spot/detail_1068.html", lat: 35.496021, lng: 134.228630 },
+      { id: "store_12", name: "ファミリーマート パレットとっとり店", category: "物販（コンビニ・サービス）", secret: "実は以前業務スーパーの跡地に作られているので通常のコンビニより敷地面積が広いです", detail: "広々とした店内でお買い物しやすく、パレットとっとりの一角で地域の方々の憩いの場となっています。", imageUrl: "https://images.unsplash.com/photo-1601599561213-832382fd07ba?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://store.family.co.jp/points/38365", lat: 35.496850, lng: 134.229550 },
+      { id: "store_13", name: "金田氷店", category: "食品店（氷専門販売）", secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です", detail: "冷たくて美しい高品質な純氷を提供し、鳥取本通り商店街の食を影で支え続けています。", imageUrl: "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496780,134.229800", siteUrl: "https://hondohri.com/store/291/", lat: 35.496780, lng: 134.229800 },
+      { id: "store_14", name: "さんフレッシュいなば", category: "食品店（農産物直売・野菜）", secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です", detail: "JAいなば直販推進課が手掛ける直売所で、採れたての新鮮野菜や特産品をお届けしています。", imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675", lat: 35.496850, lng: 134.229550 },
+      { id: "store_15", name: "すぺーすComodo", category: "サービス（コミュニティ・子育て）", secret: "子どもだけじゃないの、大人も楽しいコモド", detail: "地域サポートネットワークとっとりが運営。子育てひろばやカルチャー教室、コミュニティカフェを併設し、子どもから大人まで集える温かい空間です。", imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496420,134.228980", siteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral", lat: 35.496420, lng: 134.228980 },
+      { id: "store_16", name: "五行易", category: "サービス（占い・相談）", secret: "実は易者です。30分4000円 姓名判断 手相 五行易 四柱推命 気学 一般運勢", detail: "個人情報保護・秘密厳守で親身に鑑定。開運祈祷、姓名判断、手相や運勢相談に応じる商店街の隠れた名スポットです。", imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.496850,134.229550", siteUrl: "https://hondohri.com/store/306/", lat: 35.496850, lng: 134.229550 }
     ];
 
     let acquiredStamps = JSON.parse(localStorage.getItem("tottori_stamps")) || [];
     let isLineAuthenticated = localStorage.getItem("tottori_line_auth") === "true";
     let isRedeemed = localStorage.getItem("tottori_redeemed") === "true";
-    let html5QrCode = null;
+    let currentUserName = localStorage.getItem("tottori_user_name") || "参加者ユーザー";
+    let currentUserId = localStorage.getItem("tottori_user_id") || "my_user_id";
 
+    let html5QrCode = null;
     let participantsData = JSON.parse(localStorage.getItem("tottori_participants_data")) || [];
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -468,8 +490,10 @@
       renderStamps();
       renderStoreCards();
       renderRewardBox();
+      updateScannerUIStatus();
     });
 
+    // LIFF SDK 初期化
     async function initLiffSDK() {
       if (typeof liff === "undefined" || MY_LIFF_ID === "YOUR_LIFF_ID") return;
       try {
@@ -478,9 +502,14 @@
           isLineAuthenticated = true;
           localStorage.setItem("tottori_line_auth", "true");
           const profile = await liff.getProfile();
-          document.getElementById("menu-user-name").innerText = `連携済: ${profile.displayName} 様`;
+          currentUserName = profile.displayName;
+          currentUserId = profile.userId;
+          localStorage.setItem("tottori_user_name", currentUserName);
+          localStorage.setItem("tottori_user_id", currentUserId);
+
+          document.getElementById("menu-user-name").innerText = `連携済: ${currentUserName} 様`;
           document.getElementById("initial-line-overlay").classList.add("hidden");
-          registerCurrentUserLog(profile.displayName, profile.userId);
+          registerCurrentUserLog(currentUserName, currentUserId);
         }
       } catch (err) {
         console.error("LIFF 初期化エラー:", err);
@@ -494,7 +523,7 @@
       if (stampParam) {
         const store = stores.find(s => s.id === stampParam || s.name.includes(stampParam));
         if (store) {
-          processStamp(store.id);
+          validateLocationAndAddStamp(store);
           const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
           window.history.replaceState({path: cleanUrl}, '', cleanUrl);
         }
@@ -525,7 +554,8 @@
       }
     }
 
-    function registerCurrentUserLog(displayName = "参加者ユーザー", lineUserId = "my_user_id") {
+    // ユーザー名および記録のログ登録（Googleスプレッドシート連携含む）
+    function registerCurrentUserLog(displayName = currentUserName, lineUserId = currentUserId) {
       if (!isLineAuthenticated) return;
       let myUser = participantsData.find(p => p.id === lineUserId);
       const todayStr = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -539,6 +569,27 @@
         myUser.redeemed = isRedeemed;
       }
       localStorage.setItem("tottori_participants_data", JSON.stringify(participantsData));
+
+      // スプレッドシート連携（GAS_WEBAPP_URLが設定されている場合）
+      if (GAS_WEBAPP_URL) {
+        try {
+          fetch(GAS_WEBAPP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: lineUserId,
+              displayName: displayName,
+              stampsCount: acquiredStamps.length,
+              stampsList: acquiredStamps.join(", "),
+              redeemed: isRedeemed ? "引換完了" : "未引換",
+              timestamp: new Date().toISOString()
+            })
+          });
+        } catch (e) {
+          console.log("Spreadsheet log sync notice:", e);
+        }
+      }
     }
 
     function toggleHamburger() { document.getElementById("hamburger-menu").classList.toggle("hidden"); }
@@ -559,6 +610,62 @@
       document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('text-red-500', 'font-bold'); btn.classList.add('text-gray-400'); });
       const activeBtn = document.getElementById(`nav-${tabName}`);
       if (activeBtn) { activeBtn.classList.remove('text-gray-400'); activeBtn.classList.add('text-red-500', 'font-bold'); }
+    }
+
+    // 引換完了後のスキャン禁止表示切り替え
+    function updateScannerUIStatus() {
+      const scannerSec = document.getElementById("scanner-section");
+      const completedMsg = document.getElementById("scanner-completed-message");
+      if (isRedeemed) {
+        if (scannerSec) scannerSec.classList.add("hidden");
+        if (completedMsg) completedMsg.classList.remove("hidden");
+      } else {
+        if (scannerSec) scannerSec.classList.remove("hidden");
+        if (completedMsg) completedMsg.classList.add("hidden");
+      }
+    }
+
+    // 2地点間の距離計算（メートル）: Haversine公式
+    function calculateDistanceInMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+
+    // 100m以内GPSチェック判定
+    function validateLocationAndAddStamp(store) {
+      if (isRedeemed) {
+        alert("すでに500円券の引き換えが完了しているため、スタンプの追加スキャンはできません。");
+        return;
+      }
+
+      if (!navigator.geolocation) {
+        alert("お使いのブラウザは位置情報(GPS)に対応していません。位置情報を許可して再度お試しください。");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const dist = calculateDistanceInMeters(userLat, userLng, store.lat, store.lng);
+
+          if (dist <= 100) {
+            processStamp(store.id);
+          } else {
+            alert(`【エリア制限エラー】\n「${store.name}」の店頭ポスター付近（100m以内）でスキャンしてください。\n（現在地からの距離: 約${Math.round(dist)}m）`);
+          }
+        },
+        (error) => {
+          alert("位置情報(GPS)を取得できませんでした。スマホの位置情報サービスをオンにして再度お試しください。");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
     }
 
     function renderStoreCards() {
@@ -681,14 +788,22 @@
     function closeModal() { document.getElementById("modal").classList.add("hidden"); }
 
     async function startCameraScanner() {
+      if (isRedeemed) {
+        alert("すでに特典の引き換えが完了しています。QRコードのスキャンはできません。");
+        return;
+      }
+
       document.getElementById("camera-modal").classList.remove("hidden");
       if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
       try {
         await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, (decodedText) => {
           stopCameraScanner();
           const matchedStore = stores.find(s => decodedText.includes(s.id) || decodedText.includes(s.name));
-          if (matchedStore) processStamp(matchedStore.id);
-          else alert("対象店舗のQRコードではありません。");
+          if (matchedStore) {
+            validateLocationAndAddStamp(matchedStore);
+          } else {
+            alert("対象店舗のQRコードではありません。");
+          }
         });
       } catch (err) { stopCameraScanner(); }
     }
@@ -729,25 +844,37 @@
       document.getElementById("progress-bar").style.width = `${(visibleCount / 5) * 100}%`;
     }
 
+    // 特典換金表示（引き換え完了者への「おめでとう」メッセージ ＆ 非表示化）
     function renderRewardBox() {
       const box = document.getElementById("reward-claim-box");
       if (!box) return;
 
       if (isRedeemed) {
         box.innerHTML = `
-          <div class="bg-slate-100 border-2 border-slate-300 p-5 rounded-2xl text-center space-y-2 shadow-inner">
-            <span class="bg-slate-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">
-              <i class="fa-solid fa-check mr-1"></i> 引換完了（消込済み）
-            </span>
-            <p class="text-sm font-black text-slate-800">500円分フローラチケット引換済み</p>
-            <p class="text-[11px] text-slate-500">スタンプラリーへのご参加ありがとうございました！</p>
+          <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-amber-400 p-5 rounded-2xl text-center space-y-3 shadow-md animate-fade-in">
+            <div class="w-12 h-12 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto text-2xl shadow">
+              <i class="fa-solid fa-gift"></i>
+            </div>
+            <div>
+              <span class="bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">
+                🎉 引き換え完了！おめでとうございます！
+              </span>
+              <h4 class="text-sm font-black text-slate-800 mt-2">500円分フローラチケットをお受け取りいただきました！</h4>
+              <p class="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                とり○スタンプラリーへのご参加誠にありがとうございました！<br>
+                ぜひフローラチケットを使って、鳥取本通り商店街でのお買い物やカフェ・お食事をお楽しみください。
+              </p>
+            </div>
+            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-200 text-[10px] text-slate-500">
+              ※セキュリティのため、提示用QRコードは非表示となりました。
+            </div>
           </div>
         `;
         return;
       }
 
       if (acquiredStamps.length >= 5) {
-        const qrData = JSON.stringify({ userId: "my_user_id", stamps: acquiredStamps.length });
+        const qrData = JSON.stringify({ userId: currentUserId, userName: currentUserName, stamps: acquiredStamps.length });
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
 
         box.innerHTML = `
@@ -759,13 +886,14 @@
             <div class="bg-white p-3 rounded-2xl inline-block shadow-inner border border-orange-200">
               <img src="${qrImgUrl}" alt="消込用QRコード" class="w-36 h-36 mx-auto">
             </div>
-            <p class="text-[11px] text-slate-600 font-bold">引換場所のスタッフにこの画面をお見せください。</p>
+            <p class="text-[11px] text-slate-600 font-bold">下記の「まちパル鳥取」スタッフにこの画面をお見せください。</p>
           </div>
         `;
       } else {
         box.innerHTML = `
-          <div class="bg-slate-50 p-3 rounded-xl border text-center">
-            <p class="text-xs font-bold text-slate-500">あと <span class="text-red-500 text-sm font-black">${5 - acquiredStamps.length}</span> 店舗のスタンプで500円チケットを獲得できます！</p>
+          <div class="bg-slate-50 p-3.5 rounded-xl border text-center space-y-1">
+            <p class="text-xs font-bold text-slate-600">あと <span class="text-red-500 text-sm font-black">${5 - acquiredStamps.length}</span> 店舗のスタンプで500円チケットを獲得できます！</p>
+            <p class="text-[10px] text-slate-400">商店街の参加店舗（100m以内）を巡ってスタンプを集めよう！</p>
           </div>
         `;
       }
