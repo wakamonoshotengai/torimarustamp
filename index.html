@@ -288,7 +288,7 @@
   <div id="tab-shops" class="tab-content p-4 space-y-3 hidden">
     <div class="flex items-center justify-between">
       <h3 class="font-bold text-gray-800 text-sm">参加店舗一覧</h3>
-      <span class="text-xs text-gray-500">スタンプを押すと情報が解禁！</span>
+      <span class="text-xs text-gray-500">スタンプを押すと裏話が解禁！</span>
     </div>
     <div class="space-y-3" id="store-cards"></div>
   </div>
@@ -342,11 +342,11 @@
         <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
           <p class="font-bold text-red-600">📅 2026/10/25(日)</p>
           <p class="font-black text-slate-800 mt-0.5">Tottori Colorful FESⅢ</p>
-          <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-location-arrow text-red-500"></i> 📍とり○スタンプラリーブース</p>
+          <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-location-arrow text-red-500"></i> 📍とり◯スタンプラリーブース</p>
         </div>
         <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
           <p class="font-bold text-red-600">📅 2026/12/06(日)</p>
-          <p class="font-black text-slate-800 mt-0.5">とり○スタンプラリー本イベント</p>
+          <p class="font-black text-slate-800 mt-0.5">とり◯スタンプラリー本イベント</p>
           <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-location-arrow text-red-500"></i> 📍未定</p>
         </div>
       </div>
@@ -425,28 +425,56 @@
 
   <!-- 店舗詳細モーダル -->
   <div id="modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 relative">
-      <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+    <div class="bg-white w-full max-w-md max-h-[88vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 relative">
+      <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
       <div>
-        <span id="modal-category" class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">ジャンル</span>
+        <span id="modal-category" class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full inline-block">ジャンル</span>
         <h2 id="modal-store-name" class="text-xl font-black text-gray-900 mt-1">店舗名</h2>
       </div>
-      
-      <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl space-y-1.5 shadow-sm">
+
+      <!-- 店舗画像表示エリア -->
+      <div id="modal-image-container" class="w-full h-48 bg-slate-100 rounded-2xl overflow-hidden shadow-inner relative border border-slate-200 flex items-center justify-center">
+        <img id="modal-store-image" src="" alt="店舗画像" class="w-full h-full object-cover" onerror="handleImageError(this)">
+      </div>
+
+      <!-- 「実は…」シークレットエピソード -->
+      <div id="modal-secret-box" class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl space-y-1.5 shadow-sm">
         <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded inline-block">✨ 実は…（限定公開裏話）</span>
         <p id="modal-secret" class="text-sm font-extrabold leading-snug">エピソード</p>
       </div>
 
+      <!-- 未獲得時の案内表示 -->
+      <div id="modal-locked-box" class="bg-slate-100 border border-slate-200 p-4 rounded-2xl text-center space-y-1">
+        <p class="text-xs font-bold text-slate-700 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-lock text-amber-500"></i> 店舗の裏話（実は…）は未獲得です
+        </p>
+        <p class="text-[11px] text-slate-500">店頭のQRコードをスキャンすると、お店の秘話やおすすめ情報が解禁されます！</p>
+      </div>
+
+      <!-- 詳細説明 -->
       <div id="modal-detail-box" class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-700 leading-relaxed">
         <p id="modal-detail" class="text-slate-600"></p>
       </div>
 
-      <div class="space-y-2 pt-1">
-        <a id="modal-intro-btn" href="#" target="_blank" class="w-full bg-orange-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-lines"></i> お店の特設紹介ページを見る</a>
-        <a id="modal-instagram-btn" href="#" target="_blank" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-brands fa-instagram"></i> 公式Instagram</a>
-        <a id="modal-website-btn" href="#" target="_blank" class="w-full bg-slate-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-globe"></i> 店舗公式サイト</a>
+      <!-- Googleマップボタン -->
+      <a id="modal-map-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
+        <i class="fa-solid fa-map-location-dot text-sm"></i> Googleマップで場所を確認する
+      </a>
+
+      <!-- WEBリンク（URLの種類に応じて1つだけ動的表示） -->
+      <div id="modal-link-container" class="space-y-2 pt-1 border-t border-slate-100">
+        <a id="modal-intro-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition hidden">
+          <i class="fa-solid fa-file-lines"></i> お店の紹介ページを見る
+        </a>
+        <a id="modal-instagram-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-95 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition hidden">
+          <i class="fa-brands fa-instagram"></i> 公式Instagramを見る
+        </a>
       </div>
-      <button onclick="closeModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-xs">閉じる</button>
+
+      <button onclick="closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
     </div>
   </div>
 
@@ -461,167 +489,168 @@
   <script>
     const MY_LIFF_ID = "YOUR_LIFF_ID"; 
 
-    // スプレッドシート「店舗許可取り」のB列（店名）とN列（実は...）・O列（詳細）を100%完全反映
+    // スプレッドシート「店舗許可取り」の各列データ
     const stores = [
       {
         id: "store_01",
         name: "砂田園茶舗",
-        category: "食品・お茶",
+        category: "食品店（お茶・日本茶）",
         secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです",
         detail: "店内にある貴重な歴史ある「5玉そろばん」。以前は先代が5玉用として使いこなしていましたが、現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！100年の歴史の中に、ほっこり笑顔になれる温かさがあります。",
-        introUrl: "https://hondohri.com/store/193/",
-        instagramUrl: "",
-        websiteUrl: "https://hondohri.com/store/193/"
+        imageUrl: "砂田園.jpg",
+        fallbackImage: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.498050,134.229800",
+        siteUrl: "https://hondohri.com/store/193/"
       },
       {
         id: "store_02",
         name: "ビストロ フライパン",
-        category: "飲食店",
+        category: "飲食店（フレンチ・洋食）",
         secret: "実は、鳥取で30年続く本格フレンチのお店",
         detail: "創業から変わらない秘伝の洋食ソースと手作りのフレンチコースが自慢の老舗ビストロです。",
-        introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.497787,134.229887",
+        siteUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_03",
         name: "cafe SOURCE",
-        category: "カフェ・飲食店",
+        category: "飲食店（カフェ・スイーツ）",
         secret: "実は初めて夜カフェ営業をしたお店",
         detail: "若い世代が集う鳥取本通り商店街のおしゃれカフェの先駆者。落ち着いた雰囲気のインテリアと旬のデザートが人気です。",
-        introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.497612,134.230290",
+        siteUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_04",
         name: "元気酒場 はれるや",
-        category: "飲食店・居酒屋",
+        category: "飲食店（居酒屋・和食）",
         secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなお店なんです",
         detail: "明るい接客と鳥取の新鮮な魚介・肉料理を楽しめる元気あふれる居酒屋です。",
-        introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.497787,134.229887",
+        siteUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_05",
         name: "dining&cafebar break",
-        category: "カフェ・バー",
+        category: "飲食店（ダイニングバー・カフェ）",
         secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです",
         detail: "お昼のゆったりランチから夜のスタイリッシュなカクテルタイムまで幅広く楽しめるお店です。",
-        introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.497159,134.229753",
+        siteUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_06",
         name: "灯宴暁本店",
-        category: "飲食店・居酒屋",
+        category: "飲食店（和食・居酒屋）",
         secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です",
         detail: "職人が仕込む季節の和食と鳥取の地酒を落ち着いた和空間で堪能いただけます。",
-        introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496250,134.228760",
+        siteUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_07",
         name: "和牛ステーキ千里",
-        category: "飲食店・ステーキ",
+        category: "飲食店（ステーキ・肉料理）",
         secret: "実は銀座で修業したシェフが焼いてます！",
-        detail: "脱サラして今年の2月21日にオープン。シェフ兼代表は東京銀座の会員制ステーキ店で修業した経歴を持ち、仕込まれた極上の焼きの技術で極上の鳥取和牛を提供しています！",
-        introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
-        websiteUrl: ""
+        detail: "脱サラして今年の2月21日にオープン。シェフ兼代表は東京銀座の会員制ステーキ店で修業した経歴を持ち、仕込まれた極上の焼きの技術で鳥取県産「東伯和牛」を提供しています！",
+        imageUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496850,134.229550",
+        siteUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw=="
       },
       {
         id: "store_08",
         name: "ふじもとカバン店",
-        category: "物販・生活雑貨",
+        category: "物販（カバン・生活雑貨）",
         secret: "実は 創業75年 カバン専門店です",
         detail: "「カバンの事ならおまかせ❣」ランドセル・リュック・旅行用鞄などを幅広く販売。1県1店舗限定の歩行が軽快なスワニー商品やカバンの修理・お手入れもご相談承っています。",
-        introUrl: "",
-        instagramUrl: "",
-        websiteUrl: ""
+        imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.497350,134.229050",
+        siteUrl: ""
       },
       {
         id: "store_09",
         name: "(有)楠衡器製作所",
-        category: "専門技術・計量器",
+        category: "物販（専門技術・計量器）",
         secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です",
         detail: "精密なはかりや計測機器の販売・メンテナンスを行い、長年地域の商工業を支えています。",
-        introUrl: "https://hondohri.com/store/326/",
-        instagramUrl: "",
-        websiteUrl: "https://hondohri.com/store/326/"
+        imageUrl: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496490,134.229060",
+        siteUrl: "https://hondohri.com/store/326/"
       },
       {
         id: "store_10",
         name: "林ほんどおり薬局",
-        category: "薬局・ヘルスケア",
+        category: "物販（薬局・ヘルスケア）",
         secret: "実はウチのカエル今年63才なんです",
         detail: "店頭で皆様を温かくお迎えする名物サトちゃんカエル像。地域の健康相談に優しく寄り添う頼れる薬局です。",
-        introUrl: "https://toriyaku.jp/pharmacy/577/",
-        instagramUrl: "",
-        websiteUrl: "https://toriyaku.jp/pharmacy/577/"
+        imageUrl: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496670,134.229210",
+        siteUrl: "https://toriyaku.jp/pharmacy/577/"
       },
       {
         id: "store_11",
         name: "まちパル鳥取（鳥取市ふるさと物産館本店）",
-        category: "物産館・お土産",
+        category: "物販（物産館・お土産）",
         secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです",
         detail: "鳥取のお土産や地産品が揃い、スタンプラリーの特典換金場所としても常設されている中心スポットです。",
-        introUrl: "https://www.torican.jp/spot/detail_1068.html",
-        instagramUrl: "",
-        websiteUrl: "https://www.torican.jp/spot/detail_1068.html"
+        imageUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496021,134.228630",
+        siteUrl: "https://www.torican.jp/spot/detail_1068.html"
       },
       {
         id: "store_12",
         name: "ファミリーマート パレットとっとり店",
-        category: "コンビニ・サービス",
+        category: "物販（コンビニ・サービス）",
         secret: "実は以前業務スーパーの跡地に作られているので通常のコンビニより敷地面積が広いです",
         detail: "広々とした店内でお買い物しやすく、パレットとっとりの一角で地域の方々の憩いの場となっています。",
-        introUrl: "https://store.family.co.jp/points/38365",
-        instagramUrl: "",
-        websiteUrl: "https://store.family.co.jp/points/38365"
+        imageUrl: "https://images.unsplash.com/photo-1601599561213-832382fd07ba?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496850,134.229550",
+        siteUrl: "https://store.family.co.jp/points/38365"
       },
       {
         id: "store_13",
         name: "金田氷店",
-        category: "専門販売・氷",
+        category: "食品店（氷専門販売）",
         secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です",
         detail: "冷たくて美しい高品質な純氷を提供し、鳥取本通り商店街の食を影で支え続けています。",
-        introUrl: "https://hondohri.com/store/291/",
-        instagramUrl: "",
-        websiteUrl: "https://hondohri.com/store/291/"
+        imageUrl: "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496780,134.229800",
+        siteUrl: "https://hondohri.com/store/291/"
       },
       {
         id: "store_14",
         name: "さんフレッシュいなば",
-        category: "農産物直売・食品",
+        category: "食品店（農産物直売・野菜）",
         secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です",
         detail: "JAいなば直販推進課が手掛ける直売所で、採れたての新鮮野菜や特産品をお届けしています。",
-        introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675",
-        instagramUrl: "",
-        websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675"
+        imageUrl: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496850,134.229550",
+        siteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675"
       },
       {
         id: "store_15",
         name: "すぺーすComodo",
-        category: "コミュニティ・スペース",
+        category: "サービス（コミュニティ・子育て）",
         secret: "子どもだけじゃないの、大人も楽しいコモド",
         detail: "地域サポートネットワークとっとりが運営。子育てひろばやカルチャー教室、コミュニティカフェを併設し、子どもから大人まで集える温かい空間です。",
-        introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral",
-        instagramUrl: "",
-        websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral"
+        imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496420,134.228980",
+        siteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral"
       },
       {
         id: "store_16",
         name: "五行易",
-        category: "占い・相談",
+        category: "サービス（占い・相談）",
         secret: "実は易者です。30分4000円 姓名判断 手相 五行易 四柱推命 気学 一般運勢",
         detail: "個人情報保護・秘密厳守で親身に鑑定。開運祈祷、姓名判断、手相や運勢相談に応じる商店街の隠れた名スポットです。",
-        introUrl: "https://hondohri.com/store/306/",
-        instagramUrl: "",
-        websiteUrl: "https://hondohri.com/store/306/"
+        imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80",
+        mapUrl: "https://maps.google.com/?q=35.496850,134.229550",
+        siteUrl: "https://hondohri.com/store/306/"
       }
     ];
 
@@ -711,56 +740,96 @@
       if (activeBtn) { activeBtn.classList.remove('text-gray-400'); activeBtn.classList.add('text-red-500', 'font-bold'); }
     }
 
+    // 店舗一覧のレンダリング
     function renderStoreCards() {
       const container = document.getElementById("store-cards");
       if (!container) return;
       container.innerHTML = stores.map(store => {
         const isAcquired = acquiredStamps.includes(store.id);
-        const mainUrl = store.introUrl || store.instagramUrl || store.websiteUrl || "#";
+        const hasUrl = store.siteUrl && store.siteUrl !== "" && store.siteUrl !== "#";
+        const isInsta = hasUrl && store.siteUrl.includes("instagram.com");
+        
         if (isAcquired) {
           return `
             <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-2 relative">
               <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${store.category}</span>
               <h4 class="font-black text-gray-800 text-sm mt-0.5">${store.name}</h4>
+              
+              <div class="w-full h-32 bg-slate-100 rounded-xl overflow-hidden my-1 relative border">
+                <img src="${store.imageUrl}" alt="${store.name}" class="w-full h-full object-cover" onerror="handleImageError(this, '${store.fallbackImage}')">
+              </div>
+
               <div class="bg-orange-50 border border-orange-200 p-2.5 rounded-xl space-y-1">
                 <p class="text-xs text-orange-600 font-extrabold">✨ 実は: ${store.secret}</p>
-                ${store.detail ? `<p class="text-[11px] text-slate-600 leading-relaxed">${store.detail}</p>` : ''}
               </div>
+
               <div class="flex gap-2 pt-1">
-                <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">詳細を見る</button>
-                ${mainUrl !== "#" ? `<a href="${mainUrl}" target="_blank" class="flex-1 bg-orange-500 text-white font-bold py-2 rounded-xl text-xs text-center">店舗リンクへ</a>` : ''}
+                <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">詳細・マップを見る</button>
+                ${hasUrl ? `
+                  <a href="${store.siteUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 ${isInsta ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' : 'bg-orange-500'} text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1">
+                    <i class="${isInsta ? 'fa-brands fa-instagram' : 'fa-solid fa-file-lines'}"></i> ${isInsta ? 'Instagramへ' : '紹介ページへ'}
+                  </a>
+                ` : ''}
               </div>
             </div>
           `;
         } else {
           return `
-            <div class="bg-slate-100 p-4 rounded-2xl border border-dashed text-xs space-y-1">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-gray-700">${store.name}</span>
-                <span class="text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> 未獲得</span>
+                <span class="text-[9px] font-bold bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full">${store.category}</span>
+                <span class="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-lock text-[8px]"></i> 裏話未獲得</span>
               </div>
-              <p class="text-[10px] text-slate-400">QRコードをスキャンして解禁！</p>
+              <h4 onclick="openModal('${store.id}')" class="font-black text-gray-800 text-sm cursor-pointer hover:text-orange-500 flex items-center justify-between">
+                <span>${store.name}</span>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+              </h4>
+              <button onclick="openModal('${store.id}')" class="w-full bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold py-1.5 rounded-xl text-[11px] border border-slate-200 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-map-location-dot text-emerald-500"></i> 店舗写真＆マップを確認する
+              </button>
             </div>
           `;
         }
       }).join("");
     }
 
-    function setModalLinkButton(btnId, url) {
-      const btn = document.getElementById(btnId);
-      if (btn) {
-        if (url && url !== "" && url !== "#") { btn.href = url; btn.classList.remove("hidden"); }
-        else { btn.classList.add("hidden"); }
+    function handleImageError(imgEl, fallbackUrl) {
+      if (fallbackUrl) {
+        imgEl.src = fallbackUrl;
+      } else {
+        imgEl.src = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
       }
     }
 
+    // モーダルを開いた際のボタン動的制御
     function openModal(storeId) {
       const store = stores.find(s => s.id === storeId);
       if (!store) return;
+
+      const isAcquired = acquiredStamps.includes(store.id);
+
       document.getElementById("modal-category").innerText = store.category;
       document.getElementById("modal-store-name").innerText = store.name;
-      document.getElementById("modal-secret").innerText = store.secret;
       
+      // 画像設定
+      const imgEl = document.getElementById("modal-store-image");
+      imgEl.src = store.imageUrl;
+      imgEl.onerror = () => handleImageError(imgEl, store.fallbackImage);
+
+      // 実は…の表示切り替え
+      const secretBox = document.getElementById("modal-secret-box");
+      const lockedBox = document.getElementById("modal-locked-box");
+
+      if (isAcquired) {
+        document.getElementById("modal-secret").innerText = store.secret;
+        secretBox.classList.remove("hidden");
+        lockedBox.classList.add("hidden");
+      } else {
+        secretBox.classList.add("hidden");
+        lockedBox.classList.remove("hidden");
+      }
+      
+      // 詳細説明
       const detailBox = document.getElementById("modal-detail-box");
       const detailEl = document.getElementById("modal-detail");
       if (store.detail) {
@@ -770,9 +839,32 @@
         detailBox.classList.add("hidden");
       }
 
-      setModalLinkButton("modal-intro-btn", store.introUrl);
-      setModalLinkButton("modal-instagram-btn", store.instagramUrl);
-      setModalLinkButton("modal-website-btn", store.websiteUrl !== store.introUrl ? store.websiteUrl : "");
+      // Googleマップボタン
+      const mapBtn = document.getElementById("modal-map-btn");
+      if (store.mapUrl) {
+        mapBtn.href = store.mapUrl;
+        mapBtn.classList.remove("hidden");
+      } else {
+        mapBtn.classList.add("hidden");
+      }
+
+      // WEBリンクの動的出しい分け処理
+      const introBtn = document.getElementById("modal-intro-btn");
+      const instaBtn = document.getElementById("modal-instagram-btn");
+      
+      introBtn.classList.add("hidden");
+      instaBtn.classList.add("hidden");
+
+      if (store.siteUrl && store.siteUrl !== "" && store.siteUrl !== "#") {
+        if (store.siteUrl.includes("instagram.com")) {
+          instaBtn.href = store.siteUrl;
+          instaBtn.classList.remove("hidden");
+        } else {
+          introBtn.href = store.siteUrl;
+          introBtn.classList.remove("hidden");
+        }
+      }
+
       document.getElementById("modal").classList.remove("hidden");
     }
 
