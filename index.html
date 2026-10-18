@@ -432,7 +432,6 @@
   </nav>
 
   <script>
-    // ★ 発行された LIFF ID を設定済み ★
     const MY_LIFF_ID = "2012069860-oCSLG2tJ"; 
 
     const stores = [
@@ -471,7 +470,6 @@
       renderRewardBox();
     });
 
-    // LIFF SDK 初期化
     async function initLiffSDK() {
       if (typeof liff === "undefined" || MY_LIFF_ID === "YOUR_LIFF_ID") return;
       try {
@@ -726,8 +724,9 @@
           : `<span class="text-xs font-bold text-gray-300">${i + 1}</span>`;
         grid.appendChild(slot);
       }
-      document.getElementById("stamp-count").innerText = acquiredStamps.length;
-      document.getElementById("progress-bar").style.width = `${(Math.min(acquiredStamps.length, 5) / 5) * 100}%`;
+      const visibleCount = Math.min(acquiredStamps.length, 5);
+      document.getElementById("stamp-count").innerText = visibleCount;
+      document.getElementById("progress-bar").style.width = `${(visibleCount / 5) * 100}%`;
     }
 
     function renderRewardBox() {
@@ -736,10 +735,12 @@
 
       if (isRedeemed) {
         box.innerHTML = `
-          <div class="bg-slate-100 border p-4 rounded-2xl text-center space-y-1">
-            <span class="bg-slate-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full">引換完了</span>
-            <p class="text-xs font-black text-slate-700">500円分フローラチケット引換済み</p>
-            <p class="text-[10px] text-slate-500">ご参加ありがとうございました！</p>
+          <div class="bg-slate-100 border-2 border-slate-300 p-5 rounded-2xl text-center space-y-2 shadow-inner">
+            <span class="bg-slate-600 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">
+              <i class="fa-solid fa-check mr-1"></i> 引換完了（消込済み）
+            </span>
+            <p class="text-sm font-black text-slate-800">500円分フローラチケット引換済み</p>
+            <p class="text-[11px] text-slate-500">スタンプラリーへのご参加ありがとうございました！</p>
           </div>
         `;
         return;
