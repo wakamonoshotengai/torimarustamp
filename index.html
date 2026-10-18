@@ -432,7 +432,8 @@
   </nav>
 
   <script>
-    const MY_LIFF_ID = "YOUR_LIFF_ID"; 
+    // ★ 発行された LIFF ID を設定済み ★
+    const MY_LIFF_ID = "2012069860-oCSLG2tJ"; 
 
     const stores = [
       { id: "store_01", name: "砂田園茶舗", category: "食品店（お茶・日本茶）", secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです", detail: "店内にある貴重な歴史ある「5玉そろばん」。現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！", imageUrl: "砂田園.jpg", fallbackImage: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.498050,134.229800", siteUrl: "https://hondohri.com/store/193/" },
@@ -461,6 +462,7 @@
     let participantsData = JSON.parse(localStorage.getItem("tottori_participants_data")) || [];
 
     document.addEventListener("DOMContentLoaded", () => {
+      initLiffSDK();
       checkInitialLineAuth();
       checkUrlParameters();
       registerCurrentUserLog();
@@ -468,6 +470,24 @@
       renderStoreCards();
       renderRewardBox();
     });
+
+    // LIFF SDK 初期化
+    async function initLiffSDK() {
+      if (typeof liff === "undefined" || MY_LIFF_ID === "YOUR_LIFF_ID") return;
+      try {
+        await liff.init({ liffId: MY_LIFF_ID });
+        if (liff.isLoggedIn()) {
+          isLineAuthenticated = true;
+          localStorage.setItem("tottori_line_auth", "true");
+          const profile = await liff.getProfile();
+          document.getElementById("menu-user-name").innerText = `連携済: ${profile.displayName} 様`;
+          document.getElementById("initial-line-overlay").classList.add("hidden");
+          registerCurrentUserLog(profile.displayName, profile.userId);
+        }
+      } catch (err) {
+        console.error("LIFF 初期化エラー:", err);
+      }
+    }
 
     function checkUrlParameters() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -490,23 +510,33 @@
     }
 
     function executeLineLoginAndStart() {
-      isLineAuthenticated = true;
-      localStorage.setItem("tottori_line_auth", "true");
-      document.getElementById("initial-line-overlay").classList.add("hidden");
-      registerCurrentUserLog();
-      openHowToPlayModal();
-      if (typeof liff !== "undefined" && MY_LIFF_ID !== "YOUR_LIFF_ID") liff.login();
+      if (typeof liff !== "undefined" && liff.isLoggedIn()) {
+        isLineAuthenticated = true;
+        localStorage.setItem("tottori_line_auth", "true");
+        document.getElementById("initial-line-overlay").classList.add("hidden");
+        registerCurrentUserLog();
+        openHowToPlayModal();
+      } else if (typeof liff !== "undefined" && MY_LIFF_ID !== "YOUR_LIFF_ID") {
+        liff.login();
+      } else {
+        isLineAuthenticated = true;
+        localStorage.setItem("tottori_line_auth", "true");
+        document.getElementById("initial-line-overlay").classList.add("hidden");
+        registerCurrentUserLog();
+        openHowToPlayModal();
+      }
     }
 
-    function registerCurrentUserLog() {
+    function registerCurrentUserLog(displayName = "参加者ユーザー", lineUserId = "my_user_id") {
       if (!isLineAuthenticated) return;
-      let myUser = participantsData.find(p => p.id === "my_user_id");
+      let myUser = participantsData.find(p => p.id === lineUserId);
       const todayStr = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
 
       if (!myUser) {
-        myUser = { id: "my_user_id", name: "参加者ユーザー", date: todayStr, stamps: acquiredStamps, redeemed: isRedeemed };
+        myUser = { id: lineUserId, name: displayName, date: todayStr, stamps: acquiredStamps, redeemed: isRedeemed };
         participantsData.push(myUser);
       } else {
+        myUser.name = displayName;
         myUser.stamps = acquiredStamps;
         myUser.redeemed = isRedeemed;
       }
