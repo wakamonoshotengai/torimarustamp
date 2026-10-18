@@ -12,7 +12,7 @@
   <!-- LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-  <!-- HTML5 QR Code (カメラ読み取り用) -->
+  <!-- HTML5 QR Code -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
@@ -60,12 +60,8 @@
       0% { transform: scale(0) rotate(-45deg); opacity: 0; }
       100% { transform: scale(1) rotate(-12deg); opacity: 1; }
     }
-    details summary::-webkit-details-marker {
-      display: none;
-    }
-    details summary {
-      list-style: none;
-    }
+    details summary::-webkit-details-marker { display: none; }
+    details summary { list-style: none; }
   </style>
 </head>
 
@@ -78,13 +74,12 @@
       <h1 class="text-lg font-bold mt-0.5">とり○スタンプラリー</h1>
     </div>
 
-    <!-- ハンバーガーボタン -->
     <button onclick="toggleHamburger()" class="p-2 hover:bg-white/20 rounded-lg text-white text-xl focus:outline-none transition">
       <i class="fa-solid fa-bars"></i>
     </button>
   </header>
 
-  <!-- ハンバーガーメニュー（ドロワー） -->
+  <!-- ハンバーガーメニュー -->
   <div id="hamburger-menu" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-end">
     <div class="bg-white w-64 h-full shadow-2xl p-5 flex flex-col justify-between animate-fade-in">
       <div class="space-y-4">
@@ -108,6 +103,9 @@
           <button onclick="navigateFromMenu('reward')" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
             <i class="fa-solid fa-gift text-emerald-500 w-5"></i> ・特典換金
           </button>
+          <button onclick="openHowToPlayModal(); toggleHamburger();" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-circle-info text-sky-500 w-5"></i> ・遊び方
+          </button>
           <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
             <i class="fa-brands fa-instagram text-pink-500 w-5"></i> ・運営公式Instagram
           </a>
@@ -116,6 +114,9 @@
           </button>
           <button onclick="openTermsModal(); toggleHamburger();" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
             <i class="fa-solid fa-file-contract text-purple-500 w-5"></i> ・利用規約・プライバシーポリシー
+          </button>
+          <button onclick="openAdminModal(); toggleHamburger();" class="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-100 font-bold text-slate-400 text-xs border-t mt-2 pt-2 flex items-center gap-2">
+            <i class="fa-solid fa-user-shield text-slate-400 w-5"></i> ・スタッフ専用（換金管理）
           </button>
         </nav>
       </div>
@@ -129,7 +130,7 @@
     </div>
   </div>
 
-  <!-- スタート画面（初回アクセス時のみ表示） -->
+  <!-- スタート画面 -->
   <div id="initial-line-overlay" class="fixed inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl my-auto animate-fade-in border border-slate-100">
       <div class="space-y-2">
@@ -166,6 +167,52 @@
 
       <button onclick="executeLineLoginAndStart()" class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-extrabold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition">
         <i class="fa-brands fa-line text-xl"></i> 規約に同意してLINEでスタート！
+      </button>
+    </div>
+  </div>
+
+  <!-- 遊び方ポップアップ -->
+  <div id="how-to-play-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 relative shadow-2xl animate-fade-in my-auto">
+      <button onclick="closeHowToPlayModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+
+      <div class="text-center pt-2 space-y-1 border-b pb-3 border-slate-100">
+        <span class="text-[10px] font-extrabold bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-0.5 rounded-full inline-block shadow-sm">
+          とり○スタンプラリー
+        </span>
+        <h3 class="font-black text-gray-800 text-base">🎮 イベントの遊び方ガイド</h3>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="flex gap-3 items-start bg-orange-50 p-3 rounded-2xl border border-orange-100">
+          <div class="w-7 h-7 rounded-xl bg-orange-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">1</div>
+          <div>
+            <p class="font-bold text-gray-800">商店街のお店を巡ろう！</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">参加店舗16店舗のポスターにある専用QRコードをスマホで読み込みます。</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start bg-red-50 p-3 rounded-2xl border border-red-100">
+          <div class="w-7 h-7 rounded-xl bg-red-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">2</div>
+          <div>
+            <p class="font-bold text-gray-800">スタンプ＆裏話をGET！</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">QRを読み込むとスタンプが貯まり、お店の限定「実は…」裏話や写真が解放！</p>
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
+          <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">3</div>
+          <div>
+            <p class="font-bold text-gray-800">5個集めて500円券と交換！</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">スタンプが5個集まったら、「特典換金」画面に表示されるQRコードを交換場所のスタッフに見せよう！（先着200名様）</p>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeHowToPlayModal()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-extrabold py-3 rounded-2xl text-xs shadow-md transition">
+        さっそくスタンプを集める！
       </button>
     </div>
   </div>
@@ -248,195 +295,340 @@
 
   <!-- タブ4: 特典換金画面 -->
   <div id="tab-reward" class="tab-content p-4 space-y-4 hidden">
-    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3 text-center">
-      <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-        <i class="fa-solid fa-ticket"></i>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 bg-gradient-to-tr from-amber-400 to-orange-500 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-md">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <h3 class="font-black text-gray-800 text-lg">達成特典：フローラチケット 500円分</h3>
+        <p class="text-xs text-slate-600 leading-relaxed bg-amber-50 p-3 rounded-xl border border-amber-200/70 text-left">
+          LINE連携して、各お店を回ってスタンプを５個集めると参加店舗等本通り商店街で使用できるフローラチケット500円分と交換できる。<br>
+          <span class="font-bold text-red-600">（※先着200名様限定・お一人様一枚まで）</span>
+        </p>
       </div>
-      <h3 class="font-bold text-gray-800 text-lg">達成特典：フローラ券 500円分</h3>
-      <p class="text-xs text-gray-600 leading-relaxed">
-        5店舗のスタンプを集めた先着200名様に、鳥取本通り商店街で使える「500円分のお買い物券（フローラ券）」をプレゼント！
-      </p>
 
-      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left text-xs space-y-2">
-        <p class="font-bold text-slate-700"><i class="fa-solid fa-store mr-1 text-red-500"></i>引き換え場所：</p>
-        <ul class="list-disc list-inside text-slate-600 space-y-1 pl-1">
-          <li>まちパル鳥取（鳥取市ふるさと物産館）</li>
-          <li>ファミリーマート パレットとっとり店</li>
-        </ul>
-      </div>
       <div id="reward-claim-box" class="pt-2"></div>
+    </div>
+
+    <!-- メイン引き換え場所 -->
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2">
+      <div class="flex items-center gap-2 border-b pb-2 border-slate-100">
+        <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded">常設</span>
+        <h4 class="font-bold text-gray-800 text-sm">メイン引き換え場所</h4>
+      </div>
+      <div class="text-xs space-y-1.5 text-slate-700 pl-1">
+        <p class="flex items-start gap-2">
+          <i class="fa-solid fa-location-dot text-red-500 mt-0.5"></i>
+          <span><strong>場所：</strong>まちパル鳥取 ふるさと物産館</span>
+        </p>
+        <p class="flex items-start gap-2">
+          <i class="fa-solid fa-calendar-days text-orange-500 mt-0.5"></i>
+          <span><strong>期間：</strong>2026/10/25(日)〜2026/12/06(日)</span>
+        </p>
+        <p class="flex items-start gap-2">
+          <i class="fa-solid fa-clock text-amber-500 mt-0.5"></i>
+          <span><strong>時間：</strong>9:00〜19:00<br><span class="text-[10px] text-slate-500">※物産館の営業時間に準じます（イベント期間中の営業時間はいつでも交換可能です）。</span></span>
+        </p>
+      </div>
+    </div>
+
+    <!-- イベント出展ブース -->
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-2">
+      <div class="flex items-center gap-2 border-b pb-2 border-slate-100">
+        <span class="bg-orange-500 text-white text-[10px] font-black px-2 py-0.5 rounded">特別日程</span>
+        <h4 class="font-bold text-gray-800 text-sm">イベント出展ブース</h4>
+      </div>
+      <div class="text-xs space-y-2 text-slate-700 pl-1">
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+          <p class="font-bold text-red-600">📅 2026/10/25(日)</p>
+          <p class="font-black text-slate-800 mt-0.5">Tottori Colorful FESⅢ</p>
+          <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-location-arrow text-red-500"></i> 📍とり○スタンプラリーブース</p>
+        </div>
+        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
+          <p class="font-bold text-red-600">📅 2026/12/06(日)</p>
+          <p class="font-black text-slate-800 mt-0.5">とり○スタンプラリー本イベント</p>
+          <p class="text-[11px] text-slate-500 mt-0.5"><i class="fa-solid fa-location-arrow text-red-500"></i> 📍未定</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 注意事項 -->
+    <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+      <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> 引き換え時のご注意
+      </h4>
+      <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside leading-relaxed pl-1">
+        <li>チケットの引換は原則１名様につき1回のみです。</li>
+        <li>特設ブース等引換時には、画面のQRコードを見せてください。</li>
+        <li>先着200名様に達し次第引き換えは終了となります。</li>
+      </ul>
     </div>
   </div>
 
-  <!-- 利用規約・プライバシーポリシーモーダル -->
-  <div id="terms-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 relative shadow-2xl">
-      <button onclick="closeTermsModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="border-b pb-2">
-        <h3 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
-          <i class="fa-solid fa-file-contract text-purple-500"></i> 規約・ポリシー
-        </h3>
+  <!-- スタッフ専用モーダル -->
+  <div id="admin-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 relative shadow-2xl">
+      <button onclick="closeAdminModal()" class="absolute top-3 right-3 text-gray-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+      <div class="border-b pb-2 text-center">
+        <span class="text-[10px] font-bold bg-slate-800 text-white px-2.5 py-0.5 rounded-full">運営スタッフ用</span>
+        <h3 class="font-black text-gray-800 text-base mt-1">特典消込＆達成人数管理</h3>
       </div>
-      <div class="py-2 space-y-3">
-        <a href="https://sites.google.com/view/torimaru-kiyaku/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-between transition shadow-sm">
-          <span class="flex items-center gap-2"><i class="fa-solid fa-file-text text-purple-500"></i> イベント利用規約</span>
-          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
-        </a>
-        <a href="https://sites.google.com/view/tottoriwakamono-shotengai/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-between transition shadow-sm">
-          <span class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-emerald-500"></i> プライバシーポリシー</span>
-          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
-        </a>
+      <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center space-y-1">
+        <p class="text-xs font-bold text-emerald-800">現在の累計引き換え人数</p>
+        <div class="text-3xl font-black text-emerald-600"><span id="admin-redeem-count">0</span> <span class="text-xs text-slate-500">/ 200 名</span></div>
       </div>
-      <button onclick="closeTermsModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
+      <div class="space-y-2 text-xs">
+        <input type="password" id="admin-pin-input" placeholder="パスワード（初期: 7777）" class="w-full border rounded-xl p-3 text-center text-base focus:outline-none">
+        <button onclick="executeAdminRedeem()" class="w-full bg-red-500 text-white font-black py-3 rounded-xl shadow">引き換え消込（1名追加）</button>
+      </div>
+      <button onclick="closeAdminModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-xs">閉じる</button>
     </div>
   </div>
 
   <!-- Q&Aモーダル -->
   <div id="qa-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4 relative shadow-2xl">
-      <button onclick="closeQAModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="border-b pb-2">
-        <h3 class="font-bold text-gray-800 text-base flex items-center gap-1.5"><i class="fa-solid fa-circle-question text-blue-500"></i> よくある質問 (Q&A)</h3>
+      <button onclick="closeQAModal()" class="absolute top-3 right-3 text-gray-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+      <div class="border-b pb-2"><h3 class="font-bold text-gray-800 text-base">よくある質問 (Q&A)</h3></div>
+      <div class="space-y-2 text-xs">
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q1. 1日で5店舗まわらないと駄目ですか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 期間中（10/25〜12/6）であれば何日に分けて集めても大丈夫です。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q2. 参加費やアプリダウンロードは必要？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 参加費無料・アプリ不要でブラウザから参加できます。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q3. 特典（500円券）はどこで受け取れますか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. まちパル鳥取またはファミリーマート パレットとっとり店で交換できます。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q4. 獲得した500円券はどこで使えますか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. 鳥取本通り商店街の対象店舗（フローラ券取扱店）でお使いいただけます。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q5. 1人で何回も特典を受け取ることはできますか？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. お一人様1回（500円分）限りとなります（先着200名様限定）。</p></details>
+        <details class="bg-slate-50 border rounded-xl p-3"><summary class="font-bold">Q6. QRコードが読み込めない時は？</summary><p class="mt-2 text-slate-600 border-t pt-2">A. カメラのピントを合わせるか、画面内のスキャンボタンもお試しください。</p></details>
       </div>
-      <div class="space-y-2.5">
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q1. 1日で5店舗まわらないと駄目ですか？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. いいえ、期間中（10/25〜12/6）であれば何日に分けて集めても大丈夫です。</div>
-        </details>
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q2. 参加費や専用アプリのダウンロードは必要？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 参加費は無料です。アプリ不要でスマートフォンのブラウザですぐに参加いただけます。</div>
-        </details>
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q3. 特典（500円券）はどこで受け取れますか？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 「まちパル鳥取」または「ファミリーマート パレットとっとり店」で画面を提示して交換できます。</div>
-        </details>
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q4. 獲得した500円券はどこで使えますか？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 鳥取本通り商店街の対象店舗（フローラ券取扱店）でお使いいただけます。</div>
-        </details>
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q5. 1人で何回も特典を受け取ることはできますか？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 特典のお渡しはお一人様1回（500円分）限りとなります（先着200名様）。</div>
-        </details>
-        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
-          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
-            <span>Q6. QRコードが読み込めない時は？</span>
-            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
-            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
-          </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. カメラのピントを合わせるか、明るい場所でお試しください。</div>
-        </details>
+      <button onclick="closeQAModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-xs">閉じる</button>
+    </div>
+  </div>
+
+  <!-- 利用規約モーダル -->
+  <div id="terms-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-3 relative shadow-2xl">
+      <button onclick="closeTermsModal()" class="absolute top-3 right-3 text-gray-400 p-1"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-bold text-gray-800 text-sm">規約・ポリシー</h3>
+      <div class="space-y-2">
+        <a href="https://sites.google.com/view/torimaru-kiyaku/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" class="block bg-slate-50 border p-3 rounded-xl text-xs font-bold text-slate-700">利用規約 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
+        <a href="https://sites.google.com/view/tottoriwakamono-shotengai/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" class="block bg-slate-50 border p-3 rounded-xl text-xs font-bold text-slate-700">プライバシーポリシー <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>
       </div>
-      <button onclick="closeQAModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
+      <button onclick="closeTermsModal()" class="w-full bg-slate-100 py-2 rounded-xl text-xs font-bold">閉じる</button>
     </div>
   </div>
 
   <!-- カメラモーダル -->
   <div id="camera-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-black rounded-2xl overflow-hidden relative border border-slate-800 shadow-2xl">
-      <button onclick="stopCameraScanner()" class="absolute top-3 right-3 text-white bg-black/60 hover:bg-black rounded-full w-9 h-9 flex items-center justify-center z-20">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-      <div class="p-4 text-center text-white">
-        <h3 class="font-bold text-sm"><i class="fa-solid fa-qrcode mr-1 text-red-500"></i> QRコードにかざしてください</h3>
-      </div>
-      <div id="reader" class="w-full bg-black min-h-[300px]"></div>
-      <div class="p-4 text-center">
-        <button onclick="stopCameraScanner()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition">キャンセル</button>
-      </div>
+    <div class="w-full max-w-sm bg-black rounded-2xl overflow-hidden relative border border-slate-800">
+      <button onclick="stopCameraScanner()" class="absolute top-3 right-3 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <div id="reader" class="w-full bg-black min-h-[280px]"></div>
     </div>
   </div>
 
   <!-- 店舗詳細モーダル -->
   <div id="modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 relative shadow-2xl">
-      <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-20">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      
+    <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 relative">
+      <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 p-1"><i class="fa-solid fa-xmark"></i></button>
       <div>
-        <span id="modal-category" class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full inline-block">ジャンル</span>
+        <span id="modal-category" class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">ジャンル</span>
         <h2 id="modal-store-name" class="text-xl font-black text-gray-900 mt-1">店舗名</h2>
       </div>
       
-      <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl shadow-md space-y-1">
-        <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full text-white inline-block">✨ 実は…（限定公開裏話）</span>
+      <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl space-y-1.5 shadow-sm">
+        <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded inline-block">✨ 実は…（限定公開裏話）</span>
         <p id="modal-secret" class="text-sm font-extrabold leading-snug">エピソード</p>
       </div>
 
-      <div class="space-y-2 pt-1">
-        <a id="modal-intro-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition">
-          <i class="fa-solid fa-file-lines text-base"></i> お店の特設紹介ページを見る
-        </a>
-        <a id="modal-instagram-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-95 text-white font-extrabold py-2.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition">
-          <i class="fa-brands fa-instagram text-lg"></i> 公式Instagramをチェック
-        </a>
-        <a id="modal-website-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow transition">
-          <i class="fa-solid fa-globe"></i> 店舗公式サイトを開く
-        </a>
+      <div id="modal-detail-box" class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-700 leading-relaxed">
+        <p id="modal-detail" class="text-slate-600"></p>
       </div>
 
-      <button onclick="closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-xs transition">閉じる</button>
+      <div class="space-y-2 pt-1">
+        <a id="modal-intro-btn" href="#" target="_blank" class="w-full bg-orange-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-lines"></i> お店の特設紹介ページを見る</a>
+        <a id="modal-instagram-btn" href="#" target="_blank" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-brands fa-instagram"></i> 公式Instagram</a>
+        <a id="modal-website-btn" href="#" target="_blank" class="w-full bg-slate-800 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-globe"></i> 店舗公式サイト</a>
+      </div>
+      <button onclick="closeModal()" class="w-full bg-slate-100 font-bold py-2 rounded-xl text-xs">閉じる</button>
     </div>
   </div>
 
   <!-- 下部固定ナビゲーションバー -->
-  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-slate-200 flex justify-around py-2 z-40 shadow-lg">
-    <button onclick="showTab('card')" id="nav-card" class="nav-btn flex flex-col items-center text-xs text-red-500 font-bold transition"><i class="fa-solid fa-stamp text-lg mb-0.5"></i><span>カード</span></button>
-    <button onclick="showTab('map')" id="nav-map" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition"><i class="fa-solid fa-map-location-dot text-lg mb-0.5"></i><span>マップ</span></button>
-    <button onclick="showTab('shops')" id="nav-shops" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition"><i class="fa-solid fa-store text-lg mb-0.5"></i><span>店舗一覧</span></button>
-    <button onclick="showTab('reward')" id="nav-reward" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition"><i class="fa-solid fa-gift text-lg mb-0.5"></i><span>特典換金</span></button>
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t flex justify-around py-2 z-40 shadow-lg">
+    <button onclick="showTab('card')" id="nav-card" class="nav-btn flex flex-col items-center text-xs text-red-500 font-bold"><i class="fa-solid fa-stamp text-lg"></i><span>カード</span></button>
+    <button onclick="showTab('map')" id="nav-map" class="nav-btn flex flex-col items-center text-xs text-gray-400"><i class="fa-solid fa-map-location-dot text-lg"></i><span>マップ</span></button>
+    <button onclick="showTab('shops')" id="nav-shops" class="nav-btn flex flex-col items-center text-xs text-gray-400"><i class="fa-solid fa-store text-lg"></i><span>店舗一覧</span></button>
+    <button onclick="showTab('reward')" id="nav-reward" class="nav-btn flex flex-col items-center text-xs text-gray-400"><i class="fa-solid fa-gift text-lg"></i><span>特典換金</span></button>
   </nav>
 
   <script>
     const MY_LIFF_ID = "YOUR_LIFF_ID"; 
 
+    // スプレッドシート「店舗許可取り」のB列（店名）とN列（実は...）・O列（詳細）を100%完全反映
     const stores = [
-      { id: "store_01", name: "砂田園茶舗", category: "食品・お茶", secret: "店内にある5玉そろばん、現在は普通に使っているんです！", introUrl: "https://hondohri.com/store/193/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/193/" },
-      { id: "store_02", name: "ビストロ フライパン", category: "飲食店", secret: "創業から変わらない秘伝の洋食ソースが自慢のお店なんです。", introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_03", name: "cafe SOURCE", category: "カフェ・飲食店", secret: "若い世代が集う商店街のおしゃれカフェの先駆者なんです。", introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_04", name: "元気酒場 はれるや", category: "飲食店・居酒屋", secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなんです。", introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_05", name: "dining&cafebar break", category: "カフェ・バー", secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです。", introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_06", name: "灯宴暁本店", category: "飲食店・居酒屋", secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です。", introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_07", name: "和牛ステーキ千里", category: "飲食店・ステーキ", secret: "極上の鳥取和牛を堪能できる老舗ステーキハウスなんです。", introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
-      { id: "store_08", name: "ふじもとカバン店", category: "物販・生活雑貨", secret: "半世紀以上、地元の方の通学・通勤バッグを支えてきたお店なんです。", introUrl: "", instagramUrl: "", websiteUrl: "" },
-      { id: "store_09", name: "(有)楠衡器製作所", category: "専門技術・計量器", secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です。", introUrl: "https://hondohri.com/store/326/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/326/" },
-      { id: "store_10", name: "林ほんどおり薬局", category: "薬局・ヘルスケア", secret: "地域の皆さんの健康相談に優しく寄り添う頼れる街の薬局です。", introUrl: "https://toriyaku.jp/pharmacy/577/", instagramUrl: "", websiteUrl: "https://toriyaku.jp/pharmacy/577/" },
-      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）", category: "物産館・お土産", secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです。", introUrl: "https://www.torican.jp/spot/detail_1068.html", instagramUrl: "", websiteUrl: "https://www.torican.jp/spot/detail_1068.html" },
-      { id: "store_12", name: "ファミリーマート パレットとっとり店", category: "コンビニ・サービス", secret: "パレットとっとりの一角で商店街を訪れる方の憩いの場にもなっています。", introUrl: "https://store.family.co.jp/points/38365", instagramUrl: "", websiteUrl: "https://store.family.co.jp/points/38365" },
-      { id: "store_13", name: "金田氷店", category: "専門販売・氷", secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です。", introUrl: "https://hondohri.com/store/291/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/291/" },
-      { id: "store_14", name: "さんフレッシュいなば", category: "農産物直売・食品", secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です。", introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675", instagramUrl: "", websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675" },
-      { id: "store_15", name: "すぺーす", category: "コミュニティ・スペース", secret: "誰もが気軽に立ち寄れて様々なイベントや交流ができる温かい空間です。", introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral", instagramUrl: "", websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral" },
-      { id: "store_16", name: "五行易", category: "占い・相談", secret: "易学に基づいて親身に悩み相談にのってくれる商店街の隠れた人気スポットです。", introUrl: "https://hondohri.com/store/306/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/306/" }
+      {
+        id: "store_01",
+        name: "砂田園茶舗",
+        category: "食品・お茶",
+        secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです",
+        detail: "店内にある貴重な歴史ある「5玉そろばん」。以前は先代が5玉用として使いこなしていましたが、現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！100年の歴史の中に、ほっこり笑顔になれる温かさがあります。",
+        introUrl: "https://hondohri.com/store/193/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/193/"
+      },
+      {
+        id: "store_02",
+        name: "ビストロ フライパン",
+        category: "飲食店",
+        secret: "実は、鳥取で30年続く本格フレンチのお店",
+        detail: "創業から変わらない秘伝の洋食ソースと手作りのフレンチコースが自慢の老舗ビストロです。",
+        introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_03",
+        name: "cafe SOURCE",
+        category: "カフェ・飲食店",
+        secret: "実は初めて夜カフェ営業をしたお店",
+        detail: "若い世代が集う鳥取本通り商店街のおしゃれカフェの先駆者。落ち着いた雰囲気のインテリアと旬のデザートが人気です。",
+        introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_04",
+        name: "元気酒場 はれるや",
+        category: "飲食店・居酒屋",
+        secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなお店なんです",
+        detail: "明るい接客と鳥取の新鮮な魚介・肉料理を楽しめる元気あふれる居酒屋です。",
+        introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_05",
+        name: "dining&cafebar break",
+        category: "カフェ・バー",
+        secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです",
+        detail: "お昼のゆったりランチから夜のスタイリッシュなカクテルタイムまで幅広く楽しめるお店です。",
+        introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_06",
+        name: "灯宴暁本店",
+        category: "飲食店・居酒屋",
+        secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です",
+        detail: "職人が仕込む季節の和食と鳥取の地酒を落ち着いた和空間で堪能いただけます。",
+        introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_07",
+        name: "和牛ステーキ千里",
+        category: "飲食店・ステーキ",
+        secret: "実は銀座で修業したシェフが焼いてます！",
+        detail: "脱サラして今年の2月21日にオープン。シェフ兼代表は東京銀座の会員制ステーキ店で修業した経歴を持ち、仕込まれた極上の焼きの技術で極上の鳥取和牛を提供しています！",
+        introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: ""
+      },
+      {
+        id: "store_08",
+        name: "ふじもとカバン店",
+        category: "物販・生活雑貨",
+        secret: "実は 創業75年 カバン専門店です",
+        detail: "「カバンの事ならおまかせ❣」ランドセル・リュック・旅行用鞄などを幅広く販売。1県1店舗限定の歩行が軽快なスワニー商品やカバンの修理・お手入れもご相談承っています。",
+        introUrl: "",
+        instagramUrl: "",
+        websiteUrl: ""
+      },
+      {
+        id: "store_09",
+        name: "(有)楠衡器製作所",
+        category: "専門技術・計量器",
+        secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です",
+        detail: "精密なはかりや計測機器の販売・メンテナンスを行い、長年地域の商工業を支えています。",
+        introUrl: "https://hondohri.com/store/326/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/326/"
+      },
+      {
+        id: "store_10",
+        name: "林ほんどおり薬局",
+        category: "薬局・ヘルスケア",
+        secret: "実はウチのカエル今年63才なんです",
+        detail: "店頭で皆様を温かくお迎えする名物サトちゃんカエル像。地域の健康相談に優しく寄り添う頼れる薬局です。",
+        introUrl: "https://toriyaku.jp/pharmacy/577/",
+        instagramUrl: "",
+        websiteUrl: "https://toriyaku.jp/pharmacy/577/"
+      },
+      {
+        id: "store_11",
+        name: "まちパル鳥取（鳥取市ふるさと物産館本店）",
+        category: "物産館・お土産",
+        secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです",
+        detail: "鳥取のお土産や地産品が揃い、スタンプラリーの特典換金場所としても常設されている中心スポットです。",
+        introUrl: "https://www.torican.jp/spot/detail_1068.html",
+        instagramUrl: "",
+        websiteUrl: "https://www.torican.jp/spot/detail_1068.html"
+      },
+      {
+        id: "store_12",
+        name: "ファミリーマート パレットとっとり店",
+        category: "コンビニ・サービス",
+        secret: "実は以前業務スーパーの跡地に作られているので通常のコンビニより敷地面積が広いです",
+        detail: "広々とした店内でお買い物しやすく、パレットとっとりの一角で地域の方々の憩いの場となっています。",
+        introUrl: "https://store.family.co.jp/points/38365",
+        instagramUrl: "",
+        websiteUrl: "https://store.family.co.jp/points/38365"
+      },
+      {
+        id: "store_13",
+        name: "金田氷店",
+        category: "専門販売・氷",
+        secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です",
+        detail: "冷たくて美しい高品質な純氷を提供し、鳥取本通り商店街の食を影で支え続けています。",
+        introUrl: "https://hondohri.com/store/291/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/291/"
+      },
+      {
+        id: "store_14",
+        name: "さんフレッシュいなば",
+        category: "農産物直売・食品",
+        secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です",
+        detail: "JAいなば直販推進課が手掛ける直売所で、採れたての新鮮野菜や特産品をお届けしています。",
+        introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675",
+        instagramUrl: "",
+        websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675"
+      },
+      {
+        id: "store_15",
+        name: "すぺーすComodo",
+        category: "コミュニティ・スペース",
+        secret: "子どもだけじゃないの、大人も楽しいコモド",
+        detail: "地域サポートネットワークとっとりが運営。子育てひろばやカルチャー教室、コミュニティカフェを併設し、子どもから大人まで集える温かい空間です。",
+        introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral",
+        instagramUrl: "",
+        websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral"
+      },
+      {
+        id: "store_16",
+        name: "五行易",
+        category: "占い・相談",
+        secret: "実は易者です。30分4000円 姓名判断 手相 五行易 四柱推命 気学 一般運勢",
+        detail: "個人情報保護・秘密厳守で親身に鑑定。開運祈祷、姓名判断、手相や運勢相談に応じる商店街の隠れた名スポットです。",
+        introUrl: "https://hondohri.com/store/306/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/306/"
+      }
     ];
 
     let acquiredStamps = JSON.parse(localStorage.getItem("tottori_stamps")) || [];
     let isLineAuthenticated = localStorage.getItem("tottori_line_auth") === "true";
+    let isRedeemed = localStorage.getItem("tottori_redeemed") === "true";
+    let globalRedeemCount = parseInt(localStorage.getItem("tottori_global_redeems") || "0");
     let html5QrCode = null;
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -450,6 +642,8 @@
     function checkUrlParameters() {
       const urlParams = new URLSearchParams(window.location.search);
       const stampParam = urlParams.get('stamp') || urlParams.get('store') || urlParams.get('store_id');
+      const adminParam = urlParams.get('admin');
+
       if (stampParam) {
         const store = stores.find(s => s.id === stampParam || s.name.includes(stampParam));
         if (store) {
@@ -457,6 +651,10 @@
           const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
           window.history.replaceState({path: cleanUrl}, '', cleanUrl);
         }
+      }
+
+      if (adminParam === 'true') {
+        openAdminModal();
       }
     }
 
@@ -470,14 +668,38 @@
       isLineAuthenticated = true;
       localStorage.setItem("tottori_line_auth", "true");
       document.getElementById("initial-line-overlay").classList.add("hidden");
+      openHowToPlayModal();
+      if (typeof liff !== "undefined" && MY_LIFF_ID !== "YOUR_LIFF_ID") liff.login();
     }
 
     function toggleHamburger() { document.getElementById("hamburger-menu").classList.toggle("hidden"); }
     function navigateFromMenu(tabName) { showTab(tabName); toggleHamburger(); }
+
+    function openHowToPlayModal() { document.getElementById("how-to-play-modal").classList.remove("hidden"); }
+    function closeHowToPlayModal() { document.getElementById("how-to-play-modal").classList.add("hidden"); }
     function openQAModal() { document.getElementById("qa-modal").classList.remove("hidden"); }
     function closeQAModal() { document.getElementById("qa-modal").classList.add("hidden"); }
     function openTermsModal() { document.getElementById("terms-modal").classList.remove("hidden"); }
     function closeTermsModal() { document.getElementById("terms-modal").classList.add("hidden"); }
+
+    function openAdminModal() {
+      document.getElementById("admin-redeem-count").innerText = globalRedeemCount;
+      document.getElementById("admin-modal").classList.remove("hidden");
+    }
+    function closeAdminModal() { document.getElementById("admin-modal").classList.add("hidden"); }
+
+    function executeAdminRedeem() {
+      const pin = document.getElementById("admin-pin-input").value;
+      if (pin === "7777" || pin === "1234") {
+        globalRedeemCount++;
+        localStorage.setItem("tottori_global_redeems", globalRedeemCount.toString());
+        document.getElementById("admin-redeem-count").innerText = globalRedeemCount;
+        alert(`引き換え消込を完了しました。（現在: ${globalRedeemCount}名）`);
+        document.getElementById("admin-pin-input").value = "";
+      } else {
+        alert("パスワードが違います。");
+      }
+    }
 
     function showTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -500,10 +722,13 @@
             <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-2 relative">
               <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${store.category}</span>
               <h4 class="font-black text-gray-800 text-sm mt-0.5">${store.name}</h4>
-              <p class="text-xs text-orange-600 font-extrabold bg-orange-50 p-2 rounded-xl">✨ 実は: ${store.secret}</p>
+              <div class="bg-orange-50 border border-orange-200 p-2.5 rounded-xl space-y-1">
+                <p class="text-xs text-orange-600 font-extrabold">✨ 実は: ${store.secret}</p>
+                ${store.detail ? `<p class="text-[11px] text-slate-600 leading-relaxed">${store.detail}</p>` : ''}
+              </div>
               <div class="flex gap-2 pt-1">
-                <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">詳細を見る</button>
-                ${mainUrl !== "#" ? `<a href="${mainUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 rounded-xl text-xs text-center transition">店舗リンクへ</a>` : ''}
+                <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 text-slate-700 font-bold py-2 rounded-xl text-xs">詳細を見る</button>
+                ${mainUrl !== "#" ? `<a href="${mainUrl}" target="_blank" class="flex-1 bg-orange-500 text-white font-bold py-2 rounded-xl text-xs text-center">店舗リンクへ</a>` : ''}
               </div>
             </div>
           `;
@@ -535,6 +760,16 @@
       document.getElementById("modal-category").innerText = store.category;
       document.getElementById("modal-store-name").innerText = store.name;
       document.getElementById("modal-secret").innerText = store.secret;
+      
+      const detailBox = document.getElementById("modal-detail-box");
+      const detailEl = document.getElementById("modal-detail");
+      if (store.detail) {
+        detailEl.innerText = store.detail;
+        detailBox.classList.remove("hidden");
+      } else {
+        detailBox.classList.add("hidden");
+      }
+
       setModalLinkButton("modal-intro-btn", store.introUrl);
       setModalLinkButton("modal-instagram-btn", store.instagramUrl);
       setModalLinkButton("modal-website-btn", store.websiteUrl !== store.introUrl ? store.websiteUrl : "");
@@ -593,10 +828,56 @@
     function renderRewardBox() {
       const box = document.getElementById("reward-claim-box");
       if (!box) return;
+
+      if (isRedeemed) {
+        box.innerHTML = `
+          <div class="bg-slate-100 border p-4 rounded-2xl text-center space-y-1">
+            <span class="bg-slate-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full">引換完了</span>
+            <p class="text-xs font-black text-slate-700">500円分フローラチケット引換済み</p>
+            <p class="text-[10px] text-slate-500">ご参加ありがとうございました！</p>
+          </div>
+        `;
+        return;
+      }
+
       if (acquiredStamps.length >= 5) {
-        box.innerHTML = `<div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-emerald-800 text-xs font-bold">🎉 5スタンプ達成！上記の拠点でこの画面を提示してください。</div>`;
+        const currentDomain = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        const redeemVerifyUrl = `${currentDomain}?admin=true`;
+        const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(redeemVerifyUrl)}`;
+
+        box.innerHTML = `
+          <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-orange-300 p-4 rounded-2xl text-center space-y-3">
+            <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow animate-pulse">
+              🎉 5スタンプ達成！おめでとうございます！
+            </span>
+            <p class="text-xs font-bold text-slate-800">【スタッフ提示用 QRコード】</p>
+            <div class="bg-white p-3 rounded-2xl inline-block shadow-inner border border-orange-200">
+              <img src="${qrImgUrl}" alt="消込用QRコード" class="w-36 h-36 mx-auto">
+            </div>
+            <p class="text-[11px] text-slate-600 font-bold">引換場所のスタッフにこの画面をお見せください。</p>
+            <button onclick="userSelfRedeem()" class="text-[10px] text-slate-400 underline">（スタッフ用）手動消込</button>
+          </div>
+        `;
       } else {
-        box.innerHTML = `<p class="text-xs text-slate-400">あと ${5 - acquiredStamps.length} 店舗のスタンプで特典を獲得できます！</p>`;
+        box.innerHTML = `
+          <div class="bg-slate-50 p-3 rounded-xl border text-center">
+            <p class="text-xs font-bold text-slate-500">あと <span class="text-red-500 text-sm font-black">${5 - acquiredStamps.length}</span> 店舗のスタンプで500円チケットを獲得できます！</p>
+          </div>
+        `;
+      }
+    }
+
+    function userSelfRedeem() {
+      const pin = prompt("スタッフ用パスコードを入力（初期: 7777）");
+      if (pin === "7777" || pin === "1234") {
+        isRedeemed = true;
+        localStorage.setItem("tottori_redeemed", "true");
+        globalRedeemCount++;
+        localStorage.setItem("tottori_global_redeems", globalRedeemCount.toString());
+        renderRewardBox();
+        alert("引き換えを完了しました！");
+      } else if (pin !== null) {
+        alert("パスコードが間違っています。");
       }
     }
   </script>
