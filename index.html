@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>とり○スタンプラリー | 鳥取本通り商店街</title>
+
+  <!-- Tailwind CSS & Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- LINE LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+  <!-- HTML5 QR Code (カメラ読み取り用) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+    }
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .stamp-slot {
+      aspect-ratio: 1;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+    .stamp-slot.active {
+      border-style: solid;
+      border-color: #ef4444;
+      background-color: #fef2f2;
+      box-shadow: 0 2px 4px rgba(239, 68, 68, 0.15);
+    }
+    .stamp-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px double #ef4444;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 13px;
+      transform: rotate(-12deg);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      100% { transform: scale(1) rotate(-12deg); opacity: 1; }
+    }
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary {
+      list-style: none;
+    }
+  </style>
+</head>
+
+<body class="pb-28 max-w-md mx-auto min-h-screen bg-slate-50 shadow-xl relative border-x border-slate-200">
+
+  <!-- ヘッダー -->
+  <header class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 sticky top-0 z-30 shadow-md flex items-center justify-between">
+    <div>
+      <span class="text-[10px] font-bold bg-white text-red-600 px-2 py-0.5 rounded-full">鳥取本通り商店街</span>
+      <h1 class="text-lg font-bold mt-0.5">とり○スタンプラリー</h1>
+    </div>
+
+    <!-- ハンバーガーボタン -->
+    <button onclick="toggleHamburger()" class="p-2 hover:bg-white/20 rounded-lg text-white text-xl focus:outline-none transition">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- ハンバーガーメニュー（ドロワー） -->
+  <div id="hamburger-menu" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-end">
+    <div class="bg-white w-64 h-full shadow-2xl p-5 flex flex-col justify-between animate-fade-in">
+      <div class="space-y-4">
+        <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+          <h3 class="font-bold text-gray-800 text-sm"><i class="fa-solid fa-compass mr-1.5 text-red-500"></i> メニュー</h3>
+          <button onclick="toggleHamburger()" class="text-gray-400 hover:text-gray-600 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <nav class="space-y-1">
+          <button onclick="navigateFromMenu('card')" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-stamp text-red-500 w-5"></i> ・カード
+          </button>
+          <button onclick="navigateFromMenu('map')" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot text-orange-500 w-5"></i> ・マップ
+          </button>
+          <button onclick="navigateFromMenu('shops')" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-store text-amber-500 w-5"></i> ・店舗情報
+          </button>
+          <button onclick="navigateFromMenu('reward')" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-gift text-emerald-500 w-5"></i> ・特典換金
+          </button>
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-brands fa-instagram text-pink-500 w-5"></i> ・運営公式Instagram
+          </a>
+          <button onclick="openQAModal(); toggleHamburger();" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-circle-question text-blue-500 w-5"></i> ・Q&A
+          </button>
+          <button onclick="openTermsModal(); toggleHamburger();" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-slate-100 font-bold text-slate-700 text-xs flex items-center gap-2">
+            <i class="fa-solid fa-file-contract text-purple-500 w-5"></i> ・利用規約・プライバシーポリシー
+          </button>
+        </nav>
+      </div>
+
+      <div id="menu-line-status" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
+        <p class="font-bold text-slate-700 flex items-center gap-1.5 mb-1">
+          <i class="fa-brands fa-line text-emerald-500 text-base"></i> LINE連携状況
+        </p>
+        <p id="menu-user-name" class="text-[11px] text-slate-500">連携準備中</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- スタート画面（初回アクセス時のみ表示） -->
+  <div id="initial-line-overlay" class="fixed inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl my-auto animate-fade-in border border-slate-100">
+      <div class="space-y-2">
+        <div class="w-16 h-16 bg-gradient-to-tr from-red-500 to-orange-400 text-white rounded-2xl flex items-center justify-center mx-auto text-3xl shadow-lg transform -rotate-3">
+          <i class="fa-solid fa-stamp"></i>
+        </div>
+        <span class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full inline-block">鳥取本通り商店街</span>
+        <h2 class="font-black text-gray-800 text-lg leading-tight">とり○スタンプラリーへ<br>ようこそ！</h2>
+        <p class="text-xs text-gray-500">5店舗のスタンプを集めて500円分のお買い物券をGETしよう！</p>
+      </div>
+
+      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 text-left space-y-2 text-xs">
+        <p class="font-bold text-slate-800 flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-info text-orange-500"></i> はじめる際の手順
+        </p>
+        <ol class="space-y-1.5 text-[11px] text-slate-600 list-decimal list-inside leading-relaxed pl-0.5">
+          <li>下記の「規約」と「プライバシーポリシー」をご確認ください。</li>
+          <li>「規約に同意してLINEでスタート」を押して連携を完了します。</li>
+          <li>商店街の店舗ポスターにあるQRコードをカメラで読み込もう！</li>
+        </ol>
+      </div>
+
+      <div class="space-y-2">
+        <p class="text-[11px] font-bold text-slate-500 text-left pl-1">▼ 規約・ポリシーの確認</p>
+        <div class="grid grid-cols-2 gap-2">
+          <a href="https://sites.google.com/view/torimaru-kiyaku/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold py-2 px-2 rounded-xl text-[10px] flex items-center justify-center gap-1 transition">
+            <i class="fa-solid fa-file-text text-purple-500"></i> 利用規約 <i class="fa-solid fa-arrow-up-right-from-square text-[8px] text-slate-400"></i>
+          </a>
+          <a href="https://sites.google.com/view/tottoriwakamono-shotengai/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold py-2 px-2 rounded-xl text-[10px] flex items-center justify-center gap-1 transition">
+            <i class="fa-solid fa-user-shield text-emerald-500"></i> プライバシー <i class="fa-solid fa-arrow-up-right-from-square text-[8px] text-slate-400"></i>
+          </a>
+        </div>
+      </div>
+
+      <button onclick="executeLineLoginAndStart()" class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-extrabold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition">
+        <i class="fa-brands fa-line text-xl"></i> 規約に同意してLINEでスタート！
+      </button>
+    </div>
+  </div>
+
+  <!-- タブ1: スタンプカード画面 -->
+  <div id="tab-card" class="tab-content p-4 space-y-4">
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <div class="flex justify-between items-end mb-2">
+        <div>
+          <h2 class="font-bold text-gray-800 text-base">デジタルスタンプカード</h2>
+          <p class="text-xs text-gray-500">5店舗集めて500円券GET！</p>
+        </div>
+        <div class="text-right">
+          <span id="stamp-count" class="text-2xl font-black text-red-500">0</span>
+          <span class="text-xs text-gray-400">/ 5 個</span>
+        </div>
+      </div>
+      <div class="w-full bg-slate-100 h-2.5 rounded-full mb-4 overflow-hidden">
+        <div id="progress-bar" class="bg-gradient-to-r from-red-500 to-orange-400 h-full w-0 transition-all duration-500"></div>
+      </div>
+      <div class="stamp-grid" id="stamp-grid"></div>
+    </section>
+
+    <section class="bg-gradient-to-r from-red-500 to-orange-500 p-4 rounded-2xl text-white shadow-lg text-center space-y-2">
+      <h3 class="font-bold text-sm">店頭ポスターのQRでスタンプGET！</h3>
+      <p class="text-xs text-white/90">下のボタンを押してカメラをQRコードにかざしてください。</p>
+      
+      <button onclick="startCameraScanner()" class="w-full bg-white text-red-600 font-extrabold py-3 px-4 rounded-xl text-sm shadow-md flex items-center justify-center gap-2 hover:bg-orange-50 active:scale-95 transition">
+        <i class="fa-solid fa-camera text-lg"></i> カメラでQRコードをスキャン
+      </button>
+    </section>
+
+    <section class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-400 text-white flex items-center justify-center text-lg shadow-sm">
+          <i class="fa-brands fa-instagram"></i>
+        </div>
+        <div>
+          <p class="font-extrabold text-slate-800 text-xs">若者プロジェクト公式Instagram</p>
+          <p class="text-[10px] text-slate-500">イベント最新情報や商店街の魅力を発信中！</p>
+        </div>
+      </div>
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-xl text-[10px] transition flex-shrink-0">
+        見に行く
+      </a>
+    </section>
+  </div>
+
+  <!-- タブ2: Googleマイマップ画面 -->
+  <div id="tab-map" class="tab-content p-4 space-y-3 hidden">
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="font-bold text-gray-800 text-base flex items-center">
+            <i class="fa-solid fa-map-location-dot text-red-500 mr-2"></i>商店街アクセス配信マップ
+          </h2>
+          <p class="text-xs text-gray-500">スタンプ対象店舗の位置をチェック！</p>
+        </div>
+      </div>
+
+      <div class="w-full h-[450px] rounded-xl overflow-hidden border border-slate-200 shadow-inner">
+        <iframe 
+          src="https://www.google.com/maps/d/embed?mid=1FA5_9llxaqnz1THETeITnjlPzMlo1_8&ehbc=2E312F" 
+          class="w-full h-full border-0" 
+          allowfullscreen="" 
+          loading="lazy">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- タブ3: 店舗一覧画面 -->
+  <div id="tab-shops" class="tab-content p-4 space-y-3 hidden">
+    <div class="flex items-center justify-between">
+      <h3 class="font-bold text-gray-800 text-sm">参加店舗一覧</h3>
+      <span class="text-xs text-gray-500">スタンプを押すと情報が解禁！</span>
+    </div>
+    <div class="space-y-3" id="store-cards"></div>
+  </div>
+
+  <!-- タブ4: 特典換金画面 -->
+  <div id="tab-reward" class="tab-content p-4 space-y-4 hidden">
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-3 text-center">
+      <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+        <i class="fa-solid fa-ticket"></i>
+      </div>
+      <h3 class="font-bold text-gray-800 text-lg">達成特典：フローラ券 500円分</h3>
+      <p class="text-xs text-gray-600 leading-relaxed">
+        5店舗のスタンプを集めた先着200名様に、鳥取本通り商店街で使える「500円分のお買い物券（フローラ券）」をプレゼント！
+      </p>
+
+      <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-left text-xs space-y-2">
+        <p class="font-bold text-slate-700"><i class="fa-solid fa-store mr-1 text-red-500"></i>引き換え場所：</p>
+        <ul class="list-disc list-inside text-slate-600 space-y-1 pl-1">
+          <li>まちパル鳥取（鳥取市ふるさと物産館）</li>
+          <li>ファミリーマート パレットとっとり店</li>
+        </ul>
+      </div>
+      <div id="reward-claim-box" class="pt-2"></div>
+    </div>
+  </div>
+
+  <!-- 利用規約・プライバシーポリシーモーダル -->
+  <div id="terms-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl p-5 space-y-4 relative shadow-2xl">
+      <button onclick="closeTermsModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="border-b pb-2">
+        <h3 class="font-bold text-gray-800 text-base flex items-center gap-1.5">
+          <i class="fa-solid fa-file-contract text-purple-500"></i> 規約・ポリシー
+        </h3>
+      </div>
+      <div class="py-2 space-y-3">
+        <a href="https://sites.google.com/view/torimaru-kiyaku/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-between transition shadow-sm">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-file-text text-purple-500"></i> イベント利用規約</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+        </a>
+        <a href="https://sites.google.com/view/tottoriwakamono-shotengai/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-between transition shadow-sm">
+          <span class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-emerald-500"></i> プライバシーポリシー</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400"></i>
+        </a>
+      </div>
+      <button onclick="closeTermsModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
+    </div>
+  </div>
+
+  <!-- Q&Aモーダル -->
+  <div id="qa-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl p-5 space-y-4 relative shadow-2xl">
+      <button onclick="closeQAModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-10">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="border-b pb-2">
+        <h3 class="font-bold text-gray-800 text-base flex items-center gap-1.5"><i class="fa-solid fa-circle-question text-blue-500"></i> よくある質問 (Q&A)</h3>
+      </div>
+      <div class="space-y-2.5">
+        <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
+            <span>Q. 1日で5店舗まわらないと駄目ですか？</span>
+            <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
+            <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
+          </summary>
+          <div class="mt-2 pt-2 border-t text-xs text-slate-600">A. いいえ、期間中（10/25〜12/6）であれば何日に分けて集めても大丈夫です。</div>
+        </details>
+      </div>
+      <button onclick="closeQAModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
+    </div>
+  </div>
+
+  <!-- カメラモーダル -->
+  <div id="camera-modal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-black rounded-2xl overflow-hidden relative border border-slate-800 shadow-2xl">
+      <button onclick="stopCameraScanner()" class="absolute top-3 right-3 text-white bg-black/60 hover:bg-black rounded-full w-9 h-9 flex items-center justify-center z-20">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+      <div class="p-4 text-center text-white">
+        <h3 class="font-bold text-sm"><i class="fa-solid fa-qrcode mr-1 text-red-500"></i> QRコードにかざしてください</h3>
+      </div>
+      <div id="reader" class="w-full bg-black min-h-[300px]"></div>
+      <div class="p-4 text-center">
+        <button onclick="stopCameraScanner()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2 rounded-xl text-xs transition">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 店舗詳細モーダル -->
+  <div id="modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md max-h-[85vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl p-5 space-y-4 relative shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center z-20">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div>
+        <span id="modal-category" class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full inline-block">ジャンル</span>
+        <h2 id="modal-store-name" class="text-xl font-black text-gray-900 mt-1">店舗名</h2>
+      </div>
+      
+      <!-- 「実は…」裏話ボックス -->
+      <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-4 rounded-2xl shadow-md space-y-1">
+        <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full text-white inline-block">✨ 実は…（限定公開裏話）</span>
+        <p id="modal-secret" class="text-sm font-extrabold leading-snug">エピソード</p>
+      </div>
+
+      <!-- 写真カルーセル -->
+      <div class="relative w-full h-52 bg-slate-900 rounded-2xl overflow-hidden group shadow-inner" id="carousel-container">
+        <div id="carousel-slides" class="flex h-full transition-transform duration-300 ease-out"></div>
+
+        <button id="carousel-prev" onclick="moveCarousel(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition">
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <button id="carousel-next" onclick="moveCarousel(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center z-10 transition">
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+
+        <div class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2.5 py-0.5 rounded-full z-10 font-mono" id="carousel-filename">
+          1 / 1
+        </div>
+        <div id="carousel-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
+      </div>
+
+      <!-- 店舗固有のリンクボタンエリア -->
+      <div class="space-y-2 pt-1">
+        <a id="modal-intro-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition">
+          <i class="fa-solid fa-file-lines text-base"></i> お店の特設紹介ページを見る
+        </a>
+        <a id="modal-instagram-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:opacity-95 text-white font-extrabold py-2.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition">
+          <i class="fa-brands fa-instagram text-lg"></i> 公式Instagramをチェック
+        </a>
+        <a id="modal-website-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow transition">
+          <i class="fa-solid fa-globe"></i> 店舗公式サイトを開く
+        </a>
+      </div>
+
+      <button onclick="closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-xs transition">
+        閉じる
+      </button>
+    </div>
+  </div>
+
+  <!-- 下部固定ナビゲーションバー -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-slate-200 flex justify-around py-2 z-40 shadow-lg">
+    <button onclick="showTab('card')" id="nav-card" class="nav-btn flex flex-col items-center text-xs text-red-500 font-bold transition">
+      <i class="fa-solid fa-stamp text-lg mb-0.5"></i><span>カード</span>
+    </button>
+    <button onclick="showTab('map')" id="nav-map" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition">
+      <i class="fa-solid fa-map-location-dot text-lg mb-0.5"></i><span>マップ</span>
+    </button>
+    <button onclick="showTab('shops')" id="nav-shops" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition">
+      <i class="fa-solid fa-store text-lg mb-0.5"></i><span>店舗一覧</span>
+    </button>
+    <button onclick="showTab('reward')" id="nav-reward" class="nav-btn flex flex-col items-center text-xs text-gray-400 transition">
+      <i class="fa-solid fa-gift text-lg mb-0.5"></i><span>特典換金</span>
+    </button>
+  </nav>
+
+  <script>
+    const MY_LIFF_ID = "YOUR_LIFF_ID"; 
+
+    // 全16店舗の完全データ（スプレッドシートの個別URLを登録済）
+    const stores = [
+      {
+        id: "store_01",
+        name: "砂田園茶舗",
+        category: "食品・お茶",
+        secret: "店内にある5玉そろばん、現在は普通に使っているんです！",
+        introUrl: "https://hondohri.com/store/193/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/193/",
+        images: [
+          { url: "砂田園.jpg", fallbackUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", title: "砂田園.jpg" },
+          { url: "砂田園茶舗.jpg", fallbackUrl: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?auto=format&fit=crop&w=600&q=80", title: "砂田園茶舗.jpg" },
+          { url: "砂田園茶舗２.jpg", fallbackUrl: "https://images.unsplash.com/photo-1563822249510-04373400e994?auto=format&fit=crop&w=600&q=80", title: "砂田園茶舗２.jpg" },
+          { url: "砂田園茶舗３.jpg", fallbackUrl: "https://images.unsplash.com/photo-1571934811356-5cc531a68913?auto=format&fit=crop&w=600&q=80", title: "砂田園茶舗３.jpg" }
+        ]
+      },
+      {
+        id: "store_02",
+        name: "ビストロ フライパン",
+        category: "飲食店",
+        secret: "創業から変わらない秘伝の洋食ソースが自慢のお店なんです。",
+        introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }]
+      },
+      {
+        id: "store_03",
+        name: "cafe SOURCE",
+        category: "カフェ・飲食店",
+        secret: "若い世代が集う商店街のおしゃれカフェの先駆者なんです。",
+        introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80", title: "店内写真" }]
+      },
+      {
+        id: "store_04",
+        name: "元気酒場 はれるや",
+        category: "飲食店・居酒屋",
+        secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなんです。",
+        introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80", title: "店内風景" }]
+      },
+      {
+        id: "store_05",
+        name: "dining&cafebar break",
+        category: "カフェ・バー",
+        secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです。",
+        introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", title: "店内雰囲気" }]
+      },
+      {
+        id: "store_06",
+        name: "灯宴暁本店",
+        category: "飲食店・居酒屋",
+        secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です。",
+        introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "料理写真" }]
+      },
+      {
+        id: "store_07",
+        name: "和牛ステーキ千里",
+        category: "飲食店・ステーキ",
+        secret: "極上の鳥取和牛を堪能できる老舗ステーキハウスなんです。",
+        introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "ステーキ写真" }]
+      },
+      {
+        id: "store_08",
+        name: "ふじもとカバン店",
+        category: "物販・生活雑貨",
+        secret: "半世紀以上、地元の方の通学・通勤バッグを支えてきたお店なんです。",
+        introUrl: "",
+        instagramUrl: "",
+        websiteUrl: "",
+        images: [{ url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80", title: "商品ディスプレイ" }]
+      },
+      {
+        id: "store_09",
+        name: "(有)楠衡器製作所",
+        category: "専門技術・計量器",
+        secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です。",
+        introUrl: "https://hondohri.com/store/326/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/326/",
+        images: [{ url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }]
+      },
+      {
+        id: "store_10",
+        name: "林ほんどおり薬局",
+        category: "薬局・ヘルスケア",
+        secret: "地域の皆さんの健康相談に優しく寄り添う頼れる街の薬局です。",
+        introUrl: "https://toriyaku.jp/pharmacy/577/",
+        instagramUrl: "",
+        websiteUrl: "https://toriyaku.jp/pharmacy/577/",
+        images: [{ url: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }]
+      },
+      {
+        id: "store_11",
+        name: "まちパル鳥取（鳥取市ふるさと物産館）",
+        category: "物産館・お土産",
+        secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです。",
+        introUrl: "https://www.torican.jp/spot/detail_1068.html",
+        instagramUrl: "",
+        websiteUrl: "https://www.torican.jp/spot/detail_1068.html",
+        images: [{ url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80", title: "店内" }]
+      },
+      {
+        id: "store_12",
+        name: "ファミリーマート パレットとっとり店",
+        category: "コンビニ・サービス",
+        secret: "パレットとっとりの一角で商店街を訪れる方の憩いの場にもなっています。",
+        introUrl: "https://store.family.co.jp/points/38365",
+        instagramUrl: "",
+        websiteUrl: "https://store.family.co.jp/points/38365",
+        images: [{ url: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=600&q=80", title: "店舗" }]
+      },
+      {
+        id: "store_13",
+        name: "金田氷店",
+        category: "専門販売・氷",
+        secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です。",
+        introUrl: "https://hondohri.com/store/291/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/291/",
+        images: [{ url: "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=600&q=80", title: "店舗" }]
+      },
+      {
+        id: "store_14",
+        name: "さんフレッシュいなば",
+        category: "農産物直売・食品",
+        secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です。",
+        introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675",
+        instagramUrl: "",
+        websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675",
+        images: [{ url: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80", title: "直売所" }]
+      },
+      {
+        id: "store_15",
+        name: "すぺーす",
+        category: "コミュニティ・スペース",
+        secret: "誰もが気軽に立ち寄れて様々なイベントや交流ができる温かい空間です。",
+        introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral",
+        instagramUrl: "",
+        websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral",
+        images: [{ url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80", title: "スペース" }]
+      },
+      {
+        id: "store_16",
+        name: "五行易",
+        category: "占い・相談",
+        secret: "易学に基づいて親身に悩み相談にのってくれる商店街の隠れた人気スポットです。",
+        introUrl: "https://hondohri.com/store/306/",
+        instagramUrl: "",
+        websiteUrl: "https://hondohri.com/store/306/",
+        images: [{ url: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", title: "店舗" }]
+      }
+    ];
+
+    let acquiredStamps = JSON.parse(localStorage.getItem("tottori_stamps")) || [];
+    let isLineAuthenticated = localStorage.getItem("tottori_line_auth") === "true";
+    let html5QrCode = null;
+    let currentStoreImages = [];
+    let currentCarouselIndex = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      checkInitialLineAuth();
+      checkUrlParameters();
+      renderStamps();
+      renderStoreCards();
+      renderRewardBox();
+      initCarouselSwipe();
+    });
+
+    function checkUrlParameters() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const stampParam = urlParams.get('stamp') || urlParams.get('store') || urlParams.get('store_id');
+      if (stampParam) {
+        const store = stores.find(s => s.id === stampParam || s.name.includes(stampParam));
+        if (store) {
+          processStamp(store.id);
+          const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+          window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+        }
+      }
+    }
+
+    function checkInitialLineAuth() {
+      const overlay = document.getElementById("initial-line-overlay");
+      if (isLineAuthenticated) {
+        overlay.classList.add("hidden");
+        document.getElementById("menu-user-name").innerText = "LINE連携完了済";
+      } else {
+        overlay.classList.remove("hidden");
+        document.getElementById("menu-user-name").innerText = "未連携";
+      }
+    }
+
+    function executeLineLoginAndStart() {
+      isLineAuthenticated = true;
+      localStorage.setItem("tottori_line_auth", "true");
+      document.getElementById("initial-line-overlay").classList.add("hidden");
+      document.getElementById("menu-user-name").innerText = "LINE連携完了済";
+
+      if (typeof liff !== "undefined" && MY_LIFF_ID !== "YOUR_LIFF_ID") {
+        liff.login();
+      }
+    }
+
+    function toggleHamburger() {
+      document.getElementById("hamburger-menu").classList.toggle("hidden");
+    }
+
+    function navigateFromMenu(tabName) {
+      showTab(tabName);
+      toggleHamburger();
+    }
+
+    function openQAModal() { document.getElementById("qa-modal").classList.remove("hidden"); }
+    function closeQAModal() { document.getElementById("qa-modal").classList.add("hidden"); }
+    function openTermsModal() { document.getElementById("terms-modal").classList.remove("hidden"); }
+    function closeTermsModal() { document.getElementById("terms-modal").classList.add("hidden"); }
+
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const activeTab = document.getElementById(`tab-${tabName}`);
+      if (activeTab) activeTab.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-red-500', 'font-bold');
+        btn.classList.add('text-gray-400');
+      });
+      const activeBtn = document.getElementById(`nav-${tabName}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-gray-400');
+        activeBtn.classList.add('text-red-500', 'font-bold');
+      }
+    }
+
+    function renderStoreCards() {
+      const container = document.getElementById("store-cards");
+      if (!container) return;
+      
+      container.innerHTML = stores.map(store => {
+        const isAcquired = acquiredStamps.includes(store.id);
+        const imageCount = store.images ? store.images.length : 1;
+        const mainUrl = store.introUrl || store.instagramUrl || store.websiteUrl || "#";
+
+        if (isAcquired) {
+          return `
+            <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3 relative overflow-hidden">
+              <div class="absolute -right-6 -top-6 bg-emerald-500 text-white text-[10px] font-black px-7 py-2 rotate-45 shadow">
+                獲得済
+              </div>
+              <div class="pr-6">
+                <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${store.category}</span>
+                <h4 class="font-black text-gray-800 text-sm mt-0.5">${store.name}</h4>
+              </div>
+              <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-xl text-xs space-y-0.5">
+                <span class="text-[9px] font-bold bg-white/20 px-1.5 py-0.5 rounded">✨ 実は…</span>
+                <p class="font-extrabold leading-tight">${store.secret}</p>
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="openModal('${store.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-images text-slate-500"></i> 写真 (${imageCount})
+                </button>
+                ${mainUrl !== "#" ? `
+                  <a href="${mainUrl}" target="_blank" rel="noopener noreferrer" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 店舗リンクへ
+                  </a>
+                ` : `
+                  <button class="bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs cursor-default">
+                    リンク準備中
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="bg-slate-100/80 p-4 rounded-2xl border border-dashed border-slate-300 space-y-2.5 relative">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-[9px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">${store.category}</span>
+                  <h4 class="font-bold text-gray-700 text-sm mt-0.5">${store.name}</h4>
+                </div>
+                <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-lg border border-slate-200 flex items-center gap-1">
+                  <i class="fa-solid fa-lock text-slate-400"></i> 未獲得
+                </span>
+              </div>
+              <div class="bg-white/80 border border-slate-200 p-3 rounded-xl text-center text-xs text-slate-500 space-y-1">
+                <p class="font-bold text-slate-600"><i class="fa-solid fa-qrcode text-red-500 mr-1"></i> QRコードをスキャンして解禁！</p>
+                <p class="text-[10px] text-slate-400">お店を訪れてスタンプを獲得すると「実は…」のエピソードや写真・リンクが解放されます。</p>
+              </div>
+            </div>
+          `;
+        }
+      }).join("");
+    }
+
+    function setModalLinkButton(btnId, url) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        if (url && url !== "" && url !== "#") {
+          btn.href = url;
+          btn.classList.remove("hidden");
+        } else {
+          btn.href = "#";
+          btn.classList.add("hidden");
+        }
+      }
+    }
+
+    function openModal(storeId) {
+      const store = stores.find(s => s.id === storeId);
+      if (!store) return;
+
+      document.getElementById("modal-category").innerText = store.category;
+      document.getElementById("modal-store-name").innerText = store.name;
+      document.getElementById("modal-secret").innerText = store.secret;
+      
+      setModalLinkButton("modal-intro-btn", store.introUrl);
+      setModalLinkButton("modal-instagram-btn", store.instagramUrl);
+      setModalLinkButton("modal-website-btn", store.websiteUrl !== store.introUrl ? store.websiteUrl : "");
+
+      currentStoreImages = store.images || [{ url: store.image, title: store.name }];
+      currentCarouselIndex = 0;
+      setupCarouselUI();
+
+      document.getElementById("modal").classList.remove("hidden");
+    }
+
+    function setupCarouselUI() {
+      const slidesContainer = document.getElementById("carousel-slides");
+      const dotsContainer = document.getElementById("carousel-dots");
+      const prevBtn = document.getElementById("carousel-prev");
+      const nextBtn = document.getElementById("carousel-next");
+
+      slidesContainer.innerHTML = currentStoreImages.map((img) => {
+        const fallback = img.fallbackUrl || "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
+        return `
+          <div class="w-full h-full flex-shrink-0 relative">
+            <img 
+              src="${img.url}" 
+              onerror="if(this.src!='${fallback}'){this.src='${fallback}';}" 
+              class="w-full h-full object-cover" 
+              alt="${img.title || '店舗写真'}"
+            >
+          </div>
+        `;
+      }).join("");
+
+      if (currentStoreImages.length > 1) {
+        prevBtn.classList.remove("hidden");
+        nextBtn.classList.remove("hidden");
+        dotsContainer.classList.remove("hidden");
+        dotsContainer.innerHTML = currentStoreImages.map((_, idx) => `
+          <button onclick="setCarouselIndex(${idx})" class="w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-white w-4' : 'bg-white/50'}"></button>
+        `).join("");
+      } else {
+        prevBtn.classList.add("hidden");
+        nextBtn.classList.add("hidden");
+        dotsContainer.classList.add("hidden");
+      }
+
+      updateCarouselPosition();
+    }
+
+    function moveCarousel(direction) {
+      currentCarouselIndex += direction;
+      if (currentCarouselIndex < 0) currentCarouselIndex = currentStoreImages.length - 1;
+      if (currentCarouselIndex >= currentStoreImages.length) currentCarouselIndex = 0;
+      updateCarouselPosition();
+    }
+
+    function setCarouselIndex(index) {
+      currentCarouselIndex = index;
+      updateCarouselPosition();
+    }
+
+    function updateCarouselPosition() {
+      const slidesContainer = document.getElementById("carousel-slides");
+      slidesContainer.style.transform = `translateX(-${currentCarouselIndex * 100}%)`;
+
+      const currentImg = currentStoreImages[currentCarouselIndex];
+      const filenameBadge = document.getElementById("carousel-filename");
+      filenameBadge.innerText = `${currentCarouselIndex + 1}/${currentStoreImages.length} ${currentImg.title || ''}`;
+
+      const dots = document.querySelectorAll("#carousel-dots button");
+      dots.forEach((dot, idx) => {
+        dot.className = idx === currentCarouselIndex ? "w-4 h-2 bg-white rounded-full transition-all" : "w-2 h-2 bg-white/50 rounded-full transition-all";
+      });
+    }
+
+    function initCarouselSwipe() {
+      const container = document.getElementById("carousel-container");
+      let startX = 0;
+      container.addEventListener("touchstart", (e) => { startX = e.touches.clientX; }, { passive: true });
+      container.addEventListener("touchend", (e) => {
+        const diffX = startX - e.changedTouches.clientX;
+        if (Math.abs(diffX) > 40) {
+          if (diffX > 0) moveCarousel(1);
+          else moveCarousel(-1);
+        }
+      }, { passive: true });
+    }
+
+    function closeModal() { document.getElementById("modal").classList.add("hidden"); }
+
+    async function startCameraScanner() {
+      document.getElementById("camera-modal").classList.remove("hidden");
+      if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+
+      const qrSuccessCallback = (decodedText) => {
+        stopCameraScanner();
+        const matchedStore = stores.find(s => decodedText.includes(s.id) || decodedText.includes(s.name));
+        if (matchedStore) {
+          processStamp(matchedStore.id);
+        } else {
+          alert("「とり○スタンプラリー」対象店舗のQRコードではありません。\n内容: " + decodedText);
+        }
+      };
+
+      try {
+        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, qrSuccessCallback);
+      } catch (err) {
+        alert("カメラの起動に失敗しました。カメラの使用許可を確認してください。");
+        stopCameraScanner();
+      }
+    }
+
+    function stopCameraScanner() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => document.getElementById("camera-modal").classList.add("hidden")).catch(() => {});
+      } else {
+        document.getElementById("camera-modal").classList.add("hidden");
+      }
+    }
+
+    function processStamp(storeId) {
+      if (!acquiredStamps.includes(storeId)) {
+        acquiredStamps.push(storeId);
+        localStorage.setItem("tottori_stamps", JSON.stringify(acquiredStamps));
+        renderStamps();
+        renderStoreCards();
+        renderRewardBox();
+      }
+      openModal(storeId);
+    }
+
+    function renderStamps() {
+      const grid = document.getElementById("stamp-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      for (let i = 0; i < 5; i++) {
+        const storeId = acquiredStamps[i];
+        const store = stores.find(s => s.id === storeId);
+        const slot = document.createElement("div");
+        slot.className = `stamp-slot ${storeId ? 'active' : ''}`;
+        slot.innerHTML = storeId 
+          ? `<div class="stamp-mark">済</div><span class="text-[10px] font-bold text-gray-600 mt-1 truncate max-w-[60px]">${store ? store.name : '獲得済'}</span>`
+          : `<span class="text-xs font-bold text-gray-300">${i + 1}</span>`;
+        grid.appendChild(slot);
+      }
+      document.getElementById("stamp-count").innerText = acquiredStamps.length;
+      document.getElementById("progress-bar").style.width = `${(Math.min(acquiredStamps.length, 5) / 5) * 100}%`;
+    }
+
+    function renderRewardBox() {
+      const box = document.getElementById("reward-claim-box");
+      if (!box) return;
+      if (acquiredStamps.length >= 5) {
+        box.innerHTML = `<div class="bg-emerald-50 border border-emerald-300 p-3 rounded-xl text-emerald-800 text-xs font-bold">🎉 5スタンプ達成！上記の拠点でこの画面を提示してください。</div>`;
+      } else {
+        box.innerHTML = `<p class="text-xs text-slate-400">あと ${5 - acquiredStamps.length} 店舗のスタンプで特典を獲得できます！</p>`;
+      }
+    }
+  </script>
+</body>
+</html>
