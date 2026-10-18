@@ -309,7 +309,7 @@
             <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
             <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
           </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. いいえ、期間中であれば何日に分けて集めても大丈夫です。</div>
+          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. いいえ、期間中（10/25〜12/6）であれば何日に分けて集めても大丈夫です。</div>
         </details>
         <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
           <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
@@ -317,7 +317,7 @@
             <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
             <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
           </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 参加費は無料です。アプリ不要でスマホのブラウザですぐに参加いただけます。</div>
+          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. 参加費は無料です。アプリ不要でスマートフォンのブラウザですぐに参加いただけます。</div>
         </details>
         <details class="group bg-slate-50 border border-slate-200 rounded-xl p-3">
           <summary class="font-bold cursor-pointer text-slate-800 flex items-center justify-between text-xs select-none">
@@ -349,7 +349,7 @@
             <i class="fa-solid fa-plus text-xs group-open:hidden"></i>
             <i class="fa-solid fa-minus text-xs hidden group-open:inline"></i>
           </summary>
-          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. カメラのピントを合わせ直すか、明るい場所でお試しください。</div>
+          <div class="mt-2 pt-2 border-t text-xs text-slate-600 leading-relaxed">A. カメラのピントを合わせるか、明るい場所でお試しください。</div>
         </details>
       </div>
       <button onclick="closeQAModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">閉じる</button>
@@ -389,15 +389,6 @@
         <p id="modal-secret" class="text-sm font-extrabold leading-snug">エピソード</p>
       </div>
 
-      <!-- 写真エリア -->
-      <div class="relative w-full h-52 bg-slate-900 rounded-2xl overflow-hidden group shadow-inner" id="carousel-container">
-        <div id="carousel-slides" class="flex h-full transition-transform duration-300 ease-out"></div>
-        <button id="carousel-prev" onclick="moveCarousel(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center z-10"><i class="fa-solid fa-chevron-left text-xs"></i></button>
-        <button id="carousel-next" onclick="moveCarousel(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white rounded-full w-8 h-8 flex items-center justify-center z-10"><i class="fa-solid fa-chevron-right text-xs"></i></button>
-        <div class="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2.5 py-0.5 rounded-full z-10 font-mono" id="carousel-filename">1 / 1</div>
-        <div id="carousel-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
-      </div>
-
       <div class="space-y-2 pt-1">
         <a id="modal-intro-btn" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-md transition">
           <i class="fa-solid fa-file-lines text-base"></i> お店の特設紹介ページを見る
@@ -426,29 +417,27 @@
     const MY_LIFF_ID = "YOUR_LIFF_ID"; 
 
     const stores = [
-      { id: "store_01", name: "砂田園茶舗", category: "食品・お茶", secret: "店内にある5玉そろばん、現在は普通に使っているんです！", introUrl: "https://hondohri.com/store/193/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/193/", images: [{ url: "砂田園.jpg", fallbackUrl: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", title: "砂田園.jpg" }] },
-      { id: "store_02", name: "ビストロ フライパン", category: "飲食店", secret: "創業から変わらない秘伝の洋食ソースが自慢のお店なんです。", introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }] },
-      { id: "store_03", name: "cafe SOURCE", category: "カフェ・飲食店", secret: "若い世代が集う商店街のおしゃれカフェの先駆者なんです。", introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80", title: "店内写真" }] },
-      { id: "store_04", name: "元気酒場 はれるや", category: "飲食店・居酒屋", secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなんです。", introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80", title: "店舗風景" }] },
-      { id: "store_05", name: "dining&cafebar break", category: "カフェ・バー", secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです。", introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=600&q=80", title: "店内雰囲気" }] },
-      { id: "store_06", name: "灯宴暁本店", category: "飲食店・居酒屋", secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です。", introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80", title: "料理写真" }] },
-      { id: "store_07", name: "和牛ステーキ千里", category: "飲食店・ステーキ", secret: "極上の鳥取和牛を堪能できる老舗ステーキハウスなんです。", introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80", title: "ステーキ写真" }] },
-      { id: "store_08", name: "ふじもとカバン店", category: "物販・生活雑貨", secret: "半世紀以上、地元の方の通学・通勤バッグを支えてきたお店なんです。", introUrl: "", instagramUrl: "", websiteUrl: "", images: [{ url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=600&q=80", title: "商品ディスプレイ" }] },
-      { id: "store_09", name: "(有)楠衡器製作所", category: "専門技術・計量器", secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です。", introUrl: "https://hondohri.com/store/326/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/326/", images: [{ url: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }] },
-      { id: "store_10", name: "林ほんどおり薬局", category: "薬局・ヘルスケア", secret: "地域の皆さんの健康相談に優しく寄り添う頼れる街の薬局です。", introUrl: "https://toriyaku.jp/pharmacy/577/", instagramUrl: "", websiteUrl: "https://toriyaku.jp/pharmacy/577/", images: [{ url: "https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80", title: "店舗外観" }] },
-      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）", category: "物産館・お土産", secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです。", introUrl: "https://www.torican.jp/spot/detail_1068.html", instagramUrl: "", websiteUrl: "https://www.torican.jp/spot/detail_1068.html", images: [{ url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80", title: "店内" }] },
-      { id: "store_12", name: "ファミリーマート パレットとっとり店", category: "コンビニ・サービス", secret: "パレットとっとりの一角で商店街を訪れる方の憩いの場にもなっています。", introUrl: "https://store.family.co.jp/points/38365", instagramUrl: "", websiteUrl: "https://store.family.co.jp/points/38365", images: [{ url: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?auto=format&fit=crop&w=600&q=80", title: "店舗" }] },
-      { id: "store_13", name: "金田氷店", category: "専門販売・氷", secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です。", introUrl: "https://hondohri.com/store/291/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/291/", images: [{ url: "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=600&q=80", title: "店舗" }] },
-      { id: "store_14", name: "さんフレッシュいなば", category: "農産物直売・食品", secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です。", introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675", instagramUrl: "", websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675", images: [{ url: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80", title: "直売所" }] },
-      { id: "store_15", name: "すぺーす", category: "コミュニティ・スペース", secret: "誰もが気軽に立ち寄れて様々なイベントや交流ができる温かい空間です。", introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral", instagramUrl: "", websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral", images: [{ url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=600&q=80", title: "スペース" }] },
-      { id: "store_16", name: "五行易", category: "占い・相談", secret: "易学に基づいて親身に悩み相談にのってくれる商店街の隠れた人気スポットです。", introUrl: "https://hondohri.com/store/306/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/306/", images: [{ url: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", title: "店舗" }] }
+      { id: "store_01", name: "砂田園茶舗", category: "食品・お茶", secret: "店内にある5玉そろばん、現在は普通に使っているんです！", introUrl: "https://hondohri.com/store/193/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/193/" },
+      { id: "store_02", name: "ビストロ フライパン", category: "飲食店", secret: "創業から変わらない秘伝の洋食ソースが自慢のお店なんです。", introUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/bistrot__furaipan?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_03", name: "cafe SOURCE", category: "カフェ・飲食店", secret: "若い世代が集う商店街のおしゃれカフェの先駆者なんです。", introUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/cafesource_tottori?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_04", name: "元気酒場 はれるや", category: "飲食店・居酒屋", secret: "地元鳥取の旬食材を使った名物料理が盛りだくさんなんです。", introUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/hareruya.2021?utm_source=ig_web_button_share_sheet&mdxt=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_05", name: "dining&cafebar break", category: "カフェ・バー", secret: "昼はカフェ、夜は雰囲気が変わる隠れ家ダイニングバーなんです。", introUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/b10re7ak?utm_source=ig_web_button_share_sheet&rpxt=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_06", name: "灯宴暁本店", category: "飲食店・居酒屋", secret: "鳥取の夜を彩る落ち着いた空間とこだわりの和食が楽しめるお店です。", introUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/akatsuki.touen?utm_source=ig_web_button_share_sheet&vrfl=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_07", name: "和牛ステーキ千里", category: "飲食店・ステーキ", secret: "極上の鳥取和牛を堪能できる老舗ステーキハウスなんです。", introUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", instagramUrl: "https://www.instagram.com/senri_0221?utm_source=ig_web_button_share_sheet&dlrf=ZDNlZDc0MzIxNw==", websiteUrl: "" },
+      { id: "store_08", name: "ふじもとカバン店", category: "物販・生活雑貨", secret: "半世紀以上、地元の方の通学・通勤バッグを支えてきたお店なんです。", introUrl: "", instagramUrl: "", websiteUrl: "" },
+      { id: "store_09", name: "(有)楠衡器製作所", category: "専門技術・計量器", secret: "商店街の歴史と共に正確なはかり・計量器を提供し続けている専門店です。", introUrl: "https://hondohri.com/store/326/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/326/" },
+      { id: "store_10", name: "林ほんどおり薬局", category: "薬局・ヘルスケア", secret: "地域の皆さんの健康相談に優しく寄り添う頼れる街の薬局です。", introUrl: "https://toriyaku.jp/pharmacy/577/", instagramUrl: "", websiteUrl: "https://toriyaku.jp/pharmacy/577/" },
+      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）", category: "物産館・お土産", secret: "鳥取市の銘菓や特産品が一堂に揃う観光・地域の情報拠点なんです。", introUrl: "https://www.torican.jp/spot/detail_1068.html", instagramUrl: "", websiteUrl: "https://www.torican.jp/spot/detail_1068.html" },
+      { id: "store_12", name: "ファミリーマート パレットとっとり店", category: "コンビニ・サービス", secret: "パレットとっとりの一角で商店街を訪れる方の憩いの場にもなっています。", introUrl: "https://store.family.co.jp/points/38365", instagramUrl: "", websiteUrl: "https://store.family.co.jp/points/38365" },
+      { id: "store_13", name: "金田氷店", category: "専門販売・氷", secret: "純度の高いきれいな氷を長年商店街や地域の飲食店に届けているお店です。", introUrl: "https://hondohri.com/store/291/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/291/" },
+      { id: "store_14", name: "さんフレッシュいなば", category: "農産物直売・食品", secret: "地元農家さんが育てた新鮮な鳥取の野菜や果物が届く直売所です。", introUrl: "https://life.ja-group.jp/farm/market/detail?id=1675", instagramUrl: "", websiteUrl: "https://life.ja-group.jp/farm/market/detail?id=1675" },
+      { id: "store_15", name: "すぺーす", category: "コミュニティ・スペース", secret: "誰もが気軽に立ち寄れて様々なイベントや交流ができる温かい空間です。", introUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral", instagramUrl: "", websiteUrl: "https://www.comodo-suku2.com/space_comodo.html?utm_source=www.comodo-suku2.com&utm_medium=referral" },
+      { id: "store_16", name: "五行易", category: "占い・相談", secret: "易学に基づいて親身に悩み相談にのってくれる商店街の隠れた人気スポットです。", introUrl: "https://hondohri.com/store/306/", instagramUrl: "", websiteUrl: "https://hondohri.com/store/306/" }
     ];
 
     let acquiredStamps = JSON.parse(localStorage.getItem("tottori_stamps")) || [];
     let isLineAuthenticated = localStorage.getItem("tottori_line_auth") === "true";
     let html5QrCode = null;
-    let currentStoreImages = [];
-    let currentCarouselIndex = 0;
 
     document.addEventListener("DOMContentLoaded", () => {
       checkInitialLineAuth();
@@ -456,7 +445,6 @@
       renderStamps();
       renderStoreCards();
       renderRewardBox();
-      initCarouselSwipe();
     });
 
     function checkUrlParameters() {
@@ -474,21 +462,14 @@
 
     function checkInitialLineAuth() {
       const overlay = document.getElementById("initial-line-overlay");
-      if (isLineAuthenticated) {
-        overlay.classList.add("hidden");
-        document.getElementById("menu-user-name").innerText = "LINE連携完了済";
-      } else {
-        overlay.classList.remove("hidden");
-        document.getElementById("menu-user-name").innerText = "未連携";
-      }
+      if (isLineAuthenticated) overlay.classList.add("hidden");
+      else overlay.classList.remove("hidden");
     }
 
     function executeLineLoginAndStart() {
       isLineAuthenticated = true;
       localStorage.setItem("tottori_line_auth", "true");
       document.getElementById("initial-line-overlay").classList.add("hidden");
-      document.getElementById("menu-user-name").innerText = "LINE連携完了済";
-      if (typeof liff !== "undefined" && MY_LIFF_ID !== "YOUR_LIFF_ID") liff.login();
     }
 
     function toggleHamburger() { document.getElementById("hamburger-menu").classList.toggle("hidden"); }
@@ -503,15 +484,9 @@
       const activeTab = document.getElementById(`tab-${tabName}`);
       if (activeTab) activeTab.classList.remove('hidden');
 
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('text-red-500', 'font-bold');
-        btn.classList.add('text-gray-400');
-      });
+      document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('text-red-500', 'font-bold'); btn.classList.add('text-gray-400'); });
       const activeBtn = document.getElementById(`nav-${tabName}`);
-      if (activeBtn) {
-        activeBtn.classList.remove('text-gray-400');
-        activeBtn.classList.add('text-red-500', 'font-bold');
-      }
+      if (activeBtn) { activeBtn.classList.remove('text-gray-400'); activeBtn.classList.add('text-red-500', 'font-bold'); }
     }
 
     function renderStoreCards() {
@@ -519,45 +494,27 @@
       if (!container) return;
       container.innerHTML = stores.map(store => {
         const isAcquired = acquiredStamps.includes(store.id);
-        const imageCount = store.images ? store.images.length : 1;
         const mainUrl = store.introUrl || store.instagramUrl || store.websiteUrl || "#";
-
         if (isAcquired) {
           return `
-            <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3 relative overflow-hidden">
-              <div class="absolute -right-6 -top-6 bg-emerald-500 text-white text-[10px] font-black px-7 py-2 rotate-45 shadow">獲得済</div>
-              <div class="pr-6">
-                <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${store.category}</span>
-                <h4 class="font-black text-gray-800 text-sm mt-0.5">${store.name}</h4>
-              </div>
-              <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-xl text-xs space-y-0.5">
-                <span class="text-[9px] font-bold bg-white/20 px-1.5 py-0.5 rounded">✨ 実は…</span>
-                <p class="font-extrabold leading-tight">${store.secret}</p>
-              </div>
-              <div class="grid grid-cols-2 gap-2 pt-1">
-                <button onclick="openModal('${store.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition flex items-center justify-center gap-1">
-                  <i class="fa-solid fa-images text-slate-500"></i> 写真 (${imageCount})
-                </button>
-                ${mainUrl !== "#" ? `<a href="${mainUrl}" target="_blank" rel="noopener noreferrer" class="bg-orange-500 hover:bg-orange-600 text-white font-extrabold py-2 rounded-xl text-xs flex items-center justify-center gap-1 shadow-sm"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 店舗リンクへ</a>` : `<button class="bg-slate-100 text-slate-400 font-bold py-2 rounded-xl text-xs cursor-default">準備中</button>`}
+            <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-2 relative">
+              <span class="text-[9px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${store.category}</span>
+              <h4 class="font-black text-gray-800 text-sm mt-0.5">${store.name}</h4>
+              <p class="text-xs text-orange-600 font-extrabold bg-orange-50 p-2 rounded-xl">✨ 実は: ${store.secret}</p>
+              <div class="flex gap-2 pt-1">
+                <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">詳細を見る</button>
+                ${mainUrl !== "#" ? `<a href="${mainUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 rounded-xl text-xs text-center transition">店舗リンクへ</a>` : ''}
               </div>
             </div>
           `;
         } else {
           return `
-            <div class="bg-slate-100/80 p-4 rounded-2xl border border-dashed border-slate-300 space-y-2.5 relative">
-              <div class="flex items-center justify-between">
-                <div>
-                  <span class="text-[9px] font-bold bg-slate-200 text-slate-500 px-2 py-0.5 rounded-full">${store.category}</span>
-                  <h4 class="font-bold text-gray-700 text-sm mt-0.5">${store.name}</h4>
-                </div>
-                <span class="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-lg border border-slate-200 flex items-center gap-1">
-                  <i class="fa-solid fa-lock text-slate-400"></i> 未獲得
-                </span>
+            <div class="bg-slate-100 p-4 rounded-2xl border border-dashed text-xs space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-gray-700">${store.name}</span>
+                <span class="text-slate-400 font-bold"><i class="fa-solid fa-lock"></i> 未獲得</span>
               </div>
-              <div class="bg-white/80 border border-slate-200 p-3 rounded-xl text-center text-xs text-slate-500 space-y-1">
-                <p class="font-bold text-slate-600"><i class="fa-solid fa-qrcode text-red-500 mr-1"></i> QRコードをスキャンして解禁！</p>
-                <p class="text-[10px] text-slate-400">お店を訪れてスタンプを獲得するとエピソードや情報が解放されます。</p>
-              </div>
+              <p class="text-[10px] text-slate-400">QRコードをスキャンして解禁！</p>
             </div>
           `;
         }
@@ -581,61 +538,7 @@
       setModalLinkButton("modal-intro-btn", store.introUrl);
       setModalLinkButton("modal-instagram-btn", store.instagramUrl);
       setModalLinkButton("modal-website-btn", store.websiteUrl !== store.introUrl ? store.websiteUrl : "");
-
-      currentStoreImages = store.images || [{ url: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", title: store.name }];
-      currentCarouselIndex = 0;
-      setupCarouselUI();
       document.getElementById("modal").classList.remove("hidden");
-    }
-
-    function setupCarouselUI() {
-      const slidesContainer = document.getElementById("carousel-slides");
-      const dotsContainer = document.getElementById("carousel-dots");
-      const prevBtn = document.getElementById("carousel-prev");
-      const nextBtn = document.getElementById("carousel-next");
-
-      slidesContainer.innerHTML = currentStoreImages.map((img) => {
-        const fallback = img.fallbackUrl || "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80";
-        return `<div class="w-full h-full flex-shrink-0 relative"><img src="${img.url}" onerror="if(this.src!='${fallback}'){this.src='${fallback}';}" class="w-full h-full object-cover" alt="${img.title || '店舗写真'}"></div>`;
-      }).join("");
-
-      if (currentStoreImages.length > 1) {
-        prevBtn.classList.remove("hidden"); nextBtn.classList.remove("hidden"); dotsContainer.classList.remove("hidden");
-        dotsContainer.innerHTML = currentStoreImages.map((_, idx) => `<button onclick="setCarouselIndex(${idx})" class="w-2 h-2 rounded-full transition-all ${idx === 0 ? 'bg-white w-4' : 'bg-white/50'}"></button>`).join("");
-      } else {
-        prevBtn.classList.add("hidden"); nextBtn.classList.add("hidden"); dotsContainer.classList.add("hidden");
-      }
-      updateCarouselPosition();
-    }
-
-    function moveCarousel(direction) {
-      currentCarouselIndex += direction;
-      if (currentCarouselIndex < 0) currentCarouselIndex = currentStoreImages.length - 1;
-      if (currentCarouselIndex >= currentStoreImages.length) currentCarouselIndex = 0;
-      updateCarouselPosition();
-    }
-
-    function setCarouselIndex(index) { currentCarouselIndex = index; updateCarouselPosition(); }
-
-    function updateCarouselPosition() {
-      const slidesContainer = document.getElementById("carousel-slides");
-      slidesContainer.style.transform = `translateX(-${currentCarouselIndex * 100}%)`;
-      const currentImg = currentStoreImages[currentCarouselIndex];
-      document.getElementById("carousel-filename").innerText = `${currentCarouselIndex + 1}/${currentStoreImages.length} ${currentImg.title || ''}`;
-      document.querySelectorAll("#carousel-dots button").forEach((dot, idx) => {
-        dot.className = idx === currentCarouselIndex ? "w-4 h-2 bg-white rounded-full transition-all" : "w-2 h-2 bg-white/50 rounded-full transition-all";
-      });
-    }
-
-    function initCarouselSwipe() {
-      const container = document.getElementById("carousel-container");
-      let startX = 0;
-      if (!container) return;
-      container.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
-      container.addEventListener("touchend", (e) => {
-        const diffX = startX - e.changedTouches[0].clientX;
-        if (Math.abs(diffX) > 40) { if (diffX > 0) moveCarousel(1); else moveCarousel(-1); }
-      }, { passive: true });
     }
 
     function closeModal() { document.getElementById("modal").classList.add("hidden"); }
@@ -648,9 +551,9 @@
           stopCameraScanner();
           const matchedStore = stores.find(s => decodedText.includes(s.id) || decodedText.includes(s.name));
           if (matchedStore) processStamp(matchedStore.id);
-          else alert("対象店舗のQRコードではありません。\n内容: " + decodedText);
+          else alert("対象店舗のQRコードではありません。");
         });
-      } catch (err) { alert("カメラ起動に失敗しました。"); stopCameraScanner(); }
+      } catch (err) { stopCameraScanner(); }
     }
 
     function stopCameraScanner() {
@@ -662,7 +565,9 @@
       if (!acquiredStamps.includes(storeId)) {
         acquiredStamps.push(storeId);
         localStorage.setItem("tottori_stamps", JSON.stringify(acquiredStamps));
-        renderStamps(); renderStoreCards(); renderRewardBox();
+        renderStamps();
+        renderStoreCards();
+        renderRewardBox();
       }
       openModal(storeId);
     }
@@ -676,7 +581,9 @@
         const store = stores.find(s => s.id === storeId);
         const slot = document.createElement("div");
         slot.className = `stamp-slot ${storeId ? 'active' : ''}`;
-        slot.innerHTML = storeId ? `<div class="stamp-mark">済</div><span class="text-[10px] font-bold text-gray-600 mt-1 truncate max-w-[60px]">${store ? store.name : '獲得済'}</span>` : `<span class="text-xs font-bold text-gray-300">${i + 1}</span>`;
+        slot.innerHTML = storeId 
+          ? `<div class="stamp-mark">済</div><span class="text-[10px] font-bold text-gray-600 mt-1 truncate max-w-[60px]">${store ? store.name : '獲得済'}</span>`
+          : `<span class="text-xs font-bold text-gray-300">${i + 1}</span>`;
         grid.appendChild(slot);
       }
       document.getElementById("stamp-count").innerText = acquiredStamps.length;
