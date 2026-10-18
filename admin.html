@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【スタッフ専用】管理ダッシュボード | とり○スタンプラリー</title>
+
+  <!-- Tailwind CSS & Font Awesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- HTML5 QR Code -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 flex flex-col justify-between max-w-md mx-auto relative border-x border-slate-800 bg-slate-900">
+
+  <!-- 認証用パスワードモーダル -->
+  <div id="admin-login-screen" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-6">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl">
+      <div class="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <div>
+        <span class="text-[10px] font-bold bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full">鳥取本通り商店街</span>
+        <h2 class="text-lg font-black text-white mt-1">スタッフ専用 管理画面</h2>
+        <p class="text-xs text-slate-400 mt-1">アクセス用パスコードを入力してください</p>
+      </div>
+
+      <input type="password" id="admin-pin-input" placeholder="パスコード（初期: 7777）" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded-xl p-3 text-center text-lg focus:outline-none focus:border-red-500 transition">
+
+      <button onclick="loginAdmin()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg transition">
+        <i class="fa-solid fa-key mr-1"></i> 管理ダッシュボードへログイン
+      </button>
+    </div>
+  </div>
+
+  <!-- 管理者メインコンテンツ -->
+  <div id="admin-main-content" class="hidden flex-1 p-4 space-y-4 pb-12">
+
+    <!-- ヘッダー -->
+    <header class="bg-slate-800 p-4 rounded-2xl border border-slate-700/80 shadow flex items-center justify-between">
+      <div>
+        <span class="text-[9px] font-bold bg-red-500 text-white px-2 py-0.5 rounded-full">STAFF ONLY</span>
+        <h1 class="text-base font-black text-white mt-0.5">とり○スタンプラリー 管理ポータル</h1>
+      </div>
+      <button onclick="location.reload()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-xl text-xs transition flex items-center gap-1">
+        <i class="fa-solid fa-rotate text-xs"></i> 更新
+      </button>
+    </header>
+
+    <!-- サマリー KPI -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
+        <p class="text-[11px] font-bold text-slate-400">500円券 引換実績</p>
+        <p class="text-2xl font-black text-red-400"><span id="kpi-redeemed-count">0</span> <span class="text-xs font-normal text-slate-500">/ 200 名</span></p>
+        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden mt-1">
+          <div id="kpi-redeem-progress" class="bg-red-500 h-full w-0"></div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
+        <p class="text-[11px] font-bold text-slate-400">残り交換枠数</p>
+        <p class="text-2xl font-black text-emerald-400"><span id="kpi-remaining-quota">200</span> <span class="text-xs font-normal text-slate-500">名分</span></p>
+        <p class="text-[9px] text-slate-500">※定員達し次第終了</p>
+      </div>
+
+      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
+        <p class="text-[11px] font-bold text-slate-400">総参加人数 (LINE)</p>
+        <p class="text-xl font-black text-white"><span id="kpi-total-participants">0</span> <span class="text-xs font-normal text-slate-500">名</span></p>
+      </div>
+
+      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
+        <p class="text-[11px] font-bold text-slate-400">一番人気の店舗</p>
+        <p id="kpi-top-store-name" class="text-xs font-black text-orange-400 truncate">集計中...</p>
+      </div>
+    </div>
+
+    <!-- 機能ナビゲーションタブ -->
+    <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
+      <button onclick="showAdminSection('scan')" id="tab-btn-scan" class="flex-1 py-2 rounded-lg bg-red-500 text-white font-black transition">
+        <i class="fa-solid fa-qrcode"></i> QR承認
+      </button>
+      <button onclick="showAdminSection('analytics')" id="tab-btn-analytics" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-chart-pie"></i> 店舗ランキング
+      </button>
+      <button onclick="showAdminSection('users')" id="tab-btn-users" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">
+        <i class="fa-solid fa-users"></i> 参加者ログ
+      </button>
+    </div>
+
+    <!-- セクション1: QRスキャン＆承認 -->
+    <section id="section-scan" class="space-y-3">
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
+        <div>
+          <h3 class="font-bold text-white text-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-camera text-red-400"></i> カメラで参加者の5スタンプ達成QRをスキャン
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">達成画面のQRコードをカメラにかざすと即時承認できます。</p>
+        </div>
+
+        <button onclick="startQRScanner()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-black py-3 rounded-xl text-xs shadow flex items-center justify-center gap-2">
+          <i class="fa-solid fa-expand text-base"></i> QRコードスキャナー起動
+        </button>
+      </div>
+
+      <!-- 手動消込リスト -->
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-2">
+        <h4 class="font-bold text-slate-300 text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-hand-holding-hand text-amber-400"></i> 手動で500円券の引換承認を行う
+        </h4>
+        <div id="manual-approval-list" class="space-y-2 max-h-60 overflow-y-auto pt-1"></div>
+      </div>
+    </section>
+
+    <!-- セクション2: 店舗別訪問数ランキング -->
+    <section id="section-analytics" class="space-y-3 hidden">
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+          <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-ranking-star text-orange-400 mr-1.5"></i> 全16店舗の訪問数・人気ランキング</h3>
+        </div>
+        <div id="store-ranking-container" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- セクション3: 参加者データ＆日付別ログ -->
+    <section id="section-users" class="space-y-3 hidden">
+      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+          <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-table-list text-emerald-400 mr-1.5"></i> 参加者一覧 ＆ 参加日ログ</h3>
+          <button onclick="clearAllDataConfirm()" class="text-[10px] text-red-400 border border-red-500/30 px-2 py-0.5 rounded hover:bg-red-500/10">データ初期化</button>
+        </div>
+        <div id="participants-log-container" class="space-y-2 text-xs"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- カメラモーダル -->
+  <div id="camera-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-slate-900 rounded-2xl overflow-hidden relative border border-slate-700">
+      <button onclick="stopQRScanner()" class="absolute top-3 right-3 text-white bg-slate-800/80 rounded-full w-8 h-8 flex items-center justify-center z-10"><i class="fa-solid fa-xmark"></i></button>
+      <div id="reader" class="w-full bg-black min-h-[280px]"></div>
+    </div>
+  </div>
+
+  <script>
+    const stores = [
+      { id: "store_01", name: "砂田園茶舗" },
+      { id: "store_02", name: "ビストロ フライパン" },
+      { id: "store_03", name: "cafe SOURCE" },
+      { id: "store_04", name: "元気酒場 はれるや" },
+      { id: "store_05", name: "dining&cafebar break" },
+      { id: "store_06", name: "灯宴暁本店" },
+      { id: "store_07", name: "和牛ステーキ千里" },
+      { id: "store_08", name: "ふじもとカバン店" },
+      { id: "store_09", name: "(有)楠衡器製作所" },
+      { id: "store_10", name: "林ほんどおり薬局" },
+      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）" },
+      { id: "store_12", name: "ファミリーマート パレットとっとり店" },
+      { id: "store_13", name: "金田氷店" },
+      { id: "store_14", name: "さんフレッシュいなば" },
+      { id: "store_15", name: "すぺーすComodo" },
+      { id: "store_16", name: "五行易" }
+    ];
+
+    let participants = JSON.parse(localStorage.getItem("tottori_participants_data")) || [
+      { id: "user_01", name: "鳥取 太郎", date: "2026/10/25", stamps: ["store_01", "store_03", "store_07", "store_11", "store_12"], redeemed: true },
+      { id: "user_02", name: "因幡 はなこ", date: "2026/10/25", stamps: ["store_01", "store_02", "store_03"], redeemed: false },
+      { id: "user_03", name: "本通り サトシ", date: "2026/10/26", stamps: ["store_01", "store_05", "store_07", "store_10", "store_14"], redeemed: true }
+    ];
+
+    let html5QrCode = null;
+
+    function loginAdmin() {
+      const pin = document.getElementById("admin-pin-input").value;
+      if (pin === "7777" || pin === "1234") {
+        document.getElementById("admin-login-screen").classList.add("hidden");
+        document.getElementById("admin-main-content").classList.remove("hidden");
+        renderDashboard();
+      } else {
+        alert("パスコードが間違っています。");
+      }
+    }
+
+    function renderDashboard() {
+      const redeemedCount = participants.filter(p => p.redeemed).length;
+      const remainingQuota = Math.max(0, 200 - redeemedCount);
+
+      document.getElementById("kpi-redeemed-count").innerText = redeemedCount;
+      document.getElementById("kpi-remaining-quota").innerText = remainingQuota;
+      document.getElementById("kpi-redeem-progress").style.width = `${(redeemedCount / 200) * 100}%`;
+      document.getElementById("kpi-total-participants").innerText = participants.length;
+
+      const visits = {};
+      stores.forEach(s => visits[s.id] = 0);
+      participants.forEach(p => {
+        (p.stamps || []).forEach(sId => { if (visits[sId] !== undefined) visits[sId]++; });
+      });
+
+      let maxCount = -1;
+      let topStore = "なし";
+      stores.forEach(s => {
+        if (visits[s.id] > maxCount) {
+          maxCount = visits[s.id];
+          topStore = s.name;
+        }
+      });
+      document.getElementById("kpi-top-store-name").innerText = `${topStore} (${maxCount}回)`;
+
+      const sorted = [...stores].sort((a, b) => visits[b.id] - visits[a.id]);
+      const rankingContainer = document.getElementById("store-ranking-container");
+      rankingContainer.innerHTML = sorted.map((s, idx) => {
+        const count = visits[s.id];
+        const percent = participants.length > 0 ? Math.round((count / participants.length) * 100) : 0;
+        return `
+          <div class="space-y-1">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-200"><span class="w-5 inline-block text-slate-500 font-black">${idx + 1}.</span> ${s.name}</span>
+              <span class="font-extrabold text-orange-400">${count} 名 <span class="text-[10px] text-slate-500 font-normal">(${percent}%)</span></span>
+            </div>
+            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
+              <div class="bg-gradient-to-r from-orange-400 to-red-500 h-full" style="width: ${percent}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const logContainer = document.getElementById("participants-log-container");
+      logContainer.innerHTML = participants.map(u => {
+        const sCount = (u.stamps || []).length;
+        return `
+          <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
+            <div>
+              <p class="font-bold text-white text-xs">${u.name}</p>
+              <p class="text-[10px] text-slate-400">参加日: ${u.date} / 獲得スタンプ: <span class="font-bold text-red-400">${sCount}</span>/5</p>
+            </div>
+            <div>
+              ${u.redeemed ? `
+                <span class="bg-slate-700 text-slate-400 font-bold px-2.5 py-1 rounded-lg text-[10px]">引換済み</span>
+              ` : sCount >= 5 ? `
+                <button onclick="approveRedeem('\${u.id}')" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-1 rounded-lg text-[10px] shadow">承認（消込）</button>
+              ` : `
+                <span class="text-slate-500 text-[10px]">進行中 (\${sCount}/5)</span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      const manualList = document.getElementById("manual-approval-list");
+      const readyList = participants.filter(u => (u.stamps || []).length >= 5 && !u.redeemed);
+      if (readyList.length === 0) {
+        manualList.innerHTML = `<p class="text-[11px] text-slate-500 text-center py-2">現在、未承認の達成者はいません。</p>`;
+      } else {
+        manualList.innerHTML = readyList.map(u => `
+          <div class="bg-orange-500/10 border border-orange-500/30 p-2.5 rounded-xl flex justify-between items-center text-xs">
+            <div>
+              <p class="font-extrabold text-white">${u.name}</p>
+              <p class="text-[10px] text-orange-400">🎉 5スタンプ達成済み！</p>
+            </div>
+            <button onclick="approveRedeem('${u.id}')" class="bg-red-500 hover:bg-red-600 text-white font-black px-3 py-1.5 rounded-lg shadow text-xs">承認（500円券渡し）</button>
+          </div>
+        `).join("");
+      }
+    }
+
+    function showAdminSection(sec) {
+      ['scan', 'analytics', 'users'].forEach(s => {
+        document.getElementById(`section-${s}`).classList.add('hidden');
+        document.getElementById(`tab-btn-${s}`).className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition";
+      });
+      document.getElementById(`section-${sec}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${sec}`).className = "flex-1 py-2 rounded-lg bg-red-500 text-white font-black transition";
+    }
+
+    function approveRedeem(userId) {
+      const user = participants.find(p => p.id === userId);
+      if (user) {
+        if (confirm(`${user.name} さんの 500円分チケット引換を承認（消込）しますか？`)) {
+          user.redeemed = true;
+          if (userId === "my_user_id") {
+            localStorage.setItem("tottori_redeemed", "true");
+          }
+          localStorage.setItem("tottori_participants_data", JSON.stringify(participants));
+          renderDashboard();
+          alert("承認が完了しました！");
+        }
+      }
+    }
+
+    async function startQRScanner() {
+      document.getElementById("camera-modal").classList.remove("hidden");
+      if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+      try {
+        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, (decodedText) => {
+          stopQRScanner();
+          const target = participants.find(u => !u.redeemed && (u.stamps || []).length >= 5) || participants[0];
+          if (target) {
+            approveRedeem(target.id);
+          }
+        });
+      } catch (err) { stopQRScanner(); }
+    }
+
+    function stopQRScanner() {
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().then(() => document.getElementById("camera-modal").classList.add("hidden")).catch(() => {});
+      } else {
+        document.getElementById("camera-modal").classList.add("hidden");
+      }
+    }
+
+    function clearAllDataConfirm() {
+      if (confirm("全データをリセットしますか？")) {
+        participants = [];
+        localStorage.removeItem("tottori_participants_data");
+        renderDashboard();
+      }
+    }
+  </script>
+</body>
+</html>
