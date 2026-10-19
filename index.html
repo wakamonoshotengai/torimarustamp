@@ -118,11 +118,13 @@
         </nav>
       </div>
 
-      <div id="menu-line-status" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
-        <p class="font-bold text-slate-700 flex items-center gap-1.5 mb-1">
-          <i class="fa-brands fa-line text-emerald-500 text-base"></i> LINE連携状況
-        </p>
-        <p id="menu-user-name" class="text-[11px] text-slate-500">連携準備中</p>
+      <div id="menu-line-status" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-2">
+        <div>
+          <p class="font-bold text-slate-700 flex items-center gap-1.5 mb-0.5">
+            <i class="fa-brands fa-line text-emerald-500 text-base"></i> LINE連携状況
+          </p>
+          <p id="menu-user-name" class="text-[11px] text-slate-500">連携準備中</p>
+        </div>
       </div>
     </div>
   </div>
@@ -247,6 +249,23 @@
     <section id="scanner-completed-message" class="hidden bg-slate-800 text-white p-4 rounded-2xl text-center space-y-1 shadow-md">
       <p class="text-xs font-bold text-amber-400"><i class="fa-solid fa-circle-check"></i> 特典引き換え完了済み</p>
       <p class="text-[11px] text-slate-300">スタンプラリー特典の引き換えが完了したため、QRコードのスキャン機能は終了いたしました。ご参加ありがとうございました！</p>
+    </section>
+
+    <!-- GPS設定切り替えスイッチ (動作テスト用) -->
+    <section class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2.5">
+        <div id="gps-icon-bg" class="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm flex-shrink-0">
+          <i class="fa-solid fa-location-dot"></i>
+        </div>
+        <div>
+          <p class="font-extrabold text-slate-800 text-xs">GPS位置判定 (100m制限)</p>
+          <p id="gps-status-desc" class="text-[10px] text-slate-500">現在: ON (100m以内でスタンプ判定)</p>
+        </div>
+      </div>
+
+      <button id="gps-toggle-btn" onclick="toggleGpsSetting()" class="px-3 py-1.5 rounded-xl font-extrabold text-xs transition shadow-sm bg-emerald-500 text-white hover:bg-emerald-600">
+        ON
+      </button>
     </section>
 
     <section class="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
@@ -477,6 +496,9 @@
     let currentUserName = localStorage.getItem("tottori_user_name") || "参加者ユーザー";
     let currentUserId = localStorage.getItem("tottori_user_id") || "my_user_id";
 
+    // GPS判定フラグ（デフォルト: ON = true）
+    let isGpsEnabled = localStorage.getItem("tottori_gps_enabled") !== "false";
+
     let html5QrCode = null;
     let participantsData = JSON.parse(localStorage.getItem("tottori_participants_data")) || [];
 
@@ -489,7 +511,37 @@
       renderStoreCards();
       renderRewardBox();
       updateScannerUIStatus();
+      updateGpsUI();
     });
+
+    // GPSトグル設定切り替え
+    function toggleGpsSetting() {
+      isGpsEnabled = !isGpsEnabled;
+      localStorage.setItem("tottori_gps_enabled", isGpsEnabled ? "true" : "false");
+      updateGpsUI();
+    }
+
+    function updateGpsUI() {
+      const btn = document.getElementById("gps-toggle-btn");
+      const desc = document.getElementById("gps-status-desc");
+      const iconBg = document.getElementById("gps-icon-bg");
+
+      if (isGpsEnabled) {
+        if (btn) {
+          btn.innerText = "ON";
+          btn.className = "px-3 py-1.5 rounded-xl font-extrabold text-xs transition shadow-sm bg-emerald-500 text-white hover:bg-emerald-600";
+        }
+        if (desc) desc.innerText = "現在: ON (100m以内でスタンプ判定)";
+        if (iconBg) iconBg.className = "w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm flex-shrink-0";
+      } else {
+        if (btn) {
+          btn.innerText = "OFF (テストモード)";
+          btn.className = "px-3 py-1.5 rounded-xl font-extrabold text-xs transition shadow-sm bg-slate-400 text-white hover:bg-slate-500";
+        }
+        if (desc) desc.innerText = "現在: OFF (位置判定を無視して直接獲得可)";
+        if (iconBg) iconBg.className = "w-8 h-8 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center text-sm flex-shrink-0";
+      }
+    }
 
     // LIFF SDK 初期化
     async function initLiffSDK() {
@@ -634,15 +686,21 @@
       return R * c;
     }
 
-    // 100m以内GPSチェック判定
+    // 100m以内GPSチェック判定 (isGpsEnabled フラグ対応)
     function validateLocationAndAddStamp(store) {
       if (isRedeemed) {
         alert("すでに500円券の引き換えが完了しているため、スタンプの追加スキャンはできません。");
         return;
       }
 
+      // GPS判定がOFFの場合は距離チェックをスキップしてスタンプ付与
+      if (!isGpsEnabled) {
+        processStamp(store.id);
+        return;
+      }
+
       if (!navigator.geolocation) {
-        alert("お使いのブラウザは位置情報(GPS)に対応していません。位置情報を許可して再度お試しください。");
+        alert("お使いのブラウザは位置情報(GPS)に対応していません。位置情報を許可して再度お試しいただくか、設定でGPS判定をOFFにしてテストしてください。");
         return;
       }
 
@@ -655,11 +713,11 @@
           if (dist <= 100) {
             processStamp(store.id);
           } else {
-            alert(`【エリア制限エラー】\n「${store.name}」の店頭ポスター付近（100m以内）でスキャンしてください。\n（現在地からの距離: 約${Math.round(dist)}m）`);
+            alert(`【エリア制限エラー】\n「${store.name}」の店頭ポスター付近（100m以内）でスキャンしてください。\n（現在地からの距離: 約${Math.round(dist)}m）\n\n※テスト時は画面下のスイッチでGPS判定をOFFに設定できます。`);
           }
         },
         (error) => {
-          alert("位置情報(GPS)を取得できませんでした。スマホの位置情報サービスをオンにして再度お試しください。");
+          alert("位置情報(GPS)を取得できませんでした。スマホの位置情報サービスをオンにするか、画面下のスイッチでGPS判定をOFFに切り替えてお試しください。");
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -690,8 +748,8 @@
               <div class="flex gap-2 pt-1">
                 <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">詳細・マップを見る</button>
                 ${hasUrl ? `
-                  <a href="${store.siteUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 ${isInsta ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' : 'bg-orange-500'} text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1">
-                    <i class="${isInsta ? 'fa-brands fa-instagram' : 'fa-solid fa-file-lines'}"></i> ${isInsta ? 'Instagramへ' : '紹介ページへ'}
+                  <a href="\${store.siteUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 \${isInsta ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' : 'bg-orange-500'} text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1">
+                    <i class="\\({isInsta ? 'fa-brands fa-instagram' : 'fa-solid fa-file-lines'}"></i> \\){isInsta ? 'Instagramへ' : '紹介ページへ'}
                   </a>
                 ` : ''}
               </div>
@@ -841,7 +899,7 @@
       document.getElementById("progress-bar").style.width = `${(visibleCount / 5) * 100}%`;
     }
 
-    // ★ 特典換金表示（必須アンケート回答チェック ＆ 提示用QR表示 ＆ 引き換え完了お祝い） ★
+    // 特典換金表示（必須アンケート回答チェック ＆ 提示用QR表示 ＆ 引き換え完了お祝い）
     function renderRewardBox() {
       const box = document.getElementById("reward-claim-box");
       if (!box) return;
