@@ -3,327 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>【スタッフ専用】管理ダッシュボード | とり○スタンプラリー</title>
+  <title>とり○スタンプラリー | 管理画面ダッシュボード</title>
 
   <!-- Tailwind CSS & Font Awesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-  <!-- HTML5 QR Code -->
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #0f172a;
+      background-color: #f8fafc;
     }
   </style>
 </head>
 
-<body class="min-h-screen text-slate-100 flex flex-col justify-between max-w-md mx-auto relative border-x border-slate-800 bg-slate-900">
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
 
-  <!-- 認証用パスワードモーダル -->
-  <div id="admin-login-screen" class="fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-6">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl">
-      <div class="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto text-3xl shadow">
-        <i class="fa-solid fa-user-shield"></i>
+  <!-- パスコード認証モーダル（管理者保護） -->
+  <div id="admin-auth-modal" class="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl border border-slate-100">
+      <div class="w-14 h-14 bg-red-500 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg">
+        <i class="fa-solid fa-lock"></i>
       </div>
       <div>
-        <span class="text-[10px] font-bold bg-slate-800 text-slate-400 px-2.5 py-0.5 rounded-full">鳥取本通り商店街</span>
-        <h2 class="text-lg font-black text-white mt-1">スタッフ専用 管理画面</h2>
-        <p class="text-xs text-slate-400 mt-1">アクセス用パスコードを入力してください</p>
+        <h2 class="font-black text-slate-800 text-lg">管理者ログイン</h2>
+        <p class="text-xs text-slate-500 mt-1">管理画面を開くにはパスコード（4桁）を入力してください</p>
       </div>
 
-      <input type="password" id="admin-pin-input" placeholder="パスコード（初期: 7777）" class="w-full bg-slate-800 border border-slate-700 text-white font-bold rounded-xl p-3 text-center text-lg focus:outline-none focus:border-red-500 transition">
-
-      <button onclick="loginAdmin()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-extrabold py-3.5 rounded-xl text-xs shadow-lg transition">
-        <i class="fa-solid fa-key mr-1"></i> 管理ダッシュボードへログイン
-      </button>
-    </div>
-  </div>
-
-  <!-- 管理者メインコンテンツ -->
-  <div id="admin-main-content" class="hidden flex-1 p-4 space-y-4 pb-12">
-
-    <!-- ヘッダー -->
-    <header class="bg-slate-800 p-4 rounded-2xl border border-slate-700/80 shadow flex items-center justify-between">
-      <div>
-        <span class="text-[9px] font-bold bg-red-500 text-white px-2 py-0.5 rounded-full">STAFF ONLY</span>
-        <h1 class="text-base font-black text-white mt-0.5">とり○スタンプラリー 管理ポータル</h1>
-      </div>
-      <button onclick="location.reload()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 p-2 rounded-xl text-xs transition flex items-center gap-1">
-        <i class="fa-solid fa-rotate text-xs"></i> 更新
-      </button>
-    </header>
-
-    <!-- サマリー KPI -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
-        <p class="text-[11px] font-bold text-slate-400">500円券 引換実績</p>
-        <p class="text-2xl font-black text-red-400"><span id="kpi-redeemed-count">0</span> <span class="text-xs font-normal text-slate-500">/ 200 名</span></p>
-        <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden mt-1">
-          <div id="kpi-redeem-progress" class="bg-red-500 h-full w-0"></div>
-        </div>
-      </div>
-
-      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
-        <p class="text-[11px] font-bold text-slate-400">残り交換枠数</p>
-        <p class="text-2xl font-black text-emerald-400"><span id="kpi-remaining-quota">200</span> <span class="text-xs font-normal text-slate-500">名分</span></p>
-        <p class="text-[9px] text-slate-500">※定員達し次第終了</p>
-      </div>
-
-      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
-        <p class="text-[11px] font-bold text-slate-400">総参加人数 (LINE)</p>
-        <p class="text-xl font-black text-white"><span id="kpi-total-participants">0</span> <span class="text-xs font-normal text-slate-500">名</span></p>
-      </div>
-
-      <div class="bg-slate-800 p-3.5 rounded-2xl border border-slate-700/70 shadow-sm space-y-1">
-        <p class="text-[11px] font-bold text-slate-400">一番人気の店舗</p>
-        <p id="kpi-top-store-name" class="text-xs font-black text-orange-400 truncate">集計中...</p>
-      </div>
-    </div>
-
-    <!-- 機能ナビゲーションタブ -->
-    <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-bold gap-1">
-      <button onclick="showAdminSection('scan')" id="tab-btn-scan" class="flex-1 py-2 rounded-lg bg-red-500 text-white font-black transition">
-        <i class="fa-solid fa-qrcode"></i> QR承認
-      </button>
-      <button onclick="showAdminSection('analytics')" id="tab-btn-analytics" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-chart-pie"></i> 店舗ランキング
-      </button>
-      <button onclick="showAdminSection('users')" id="tab-btn-users" class="flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-users"></i> 参加者ログ
-      </button>
-    </div>
-
-    <!-- セクション1: QRスキャン＆承認 -->
-    <section id="section-scan" class="space-y-3">
-      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
-        <div>
-          <h3 class="font-bold text-white text-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-camera text-red-400"></i> カメラで参加者の5スタンプ達成QRをスキャン
-          </h3>
-          <p class="text-[11px] text-slate-400 mt-0.5">達成画面のQRコードをカメラにかざすと即時承認できます。</p>
-        </div>
-
-        <button onclick="startQRScanner()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-black py-3 rounded-xl text-xs shadow flex items-center justify-center gap-2">
-          <i class="fa-solid fa-expand text-base"></i> QRコードスキャナー起動
+      <div class="space-y-3">
+        <input type="password" id="admin-pass-input" maxlength="8" placeholder="パスコードを入力" class="w-full text-center text-xl font-bold tracking-widest py-3 px-4 border border-slate-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-red-500">
+        <button onclick="checkAdminPass()" class="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3 rounded-2xl text-sm shadow-md transition">
+          ログイン
         </button>
       </div>
-
-      <!-- 手動消込リスト -->
-      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-2">
-        <h4 class="font-bold text-slate-300 text-xs flex items-center gap-1.5">
-          <i class="fa-solid fa-hand-holding-hand text-amber-400"></i> 手動で500円券の引換承認を行う
-        </h4>
-        <div id="manual-approval-list" class="space-y-2 max-h-60 overflow-y-auto pt-1"></div>
-      </div>
-    </section>
-
-    <!-- セクション2: 店舗別訪問数ランキング -->
-    <section id="section-analytics" class="space-y-3 hidden">
-      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-          <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-ranking-star text-orange-400 mr-1.5"></i> 全16店舗の訪問数・人気ランキング</h3>
-        </div>
-        <div id="store-ranking-container" class="space-y-3"></div>
-      </div>
-    </section>
-
-    <!-- セクション3: 参加者データ＆日付別ログ -->
-    <section id="section-users" class="space-y-3 hidden">
-      <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700/70 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-          <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-table-list text-emerald-400 mr-1.5"></i> 参加者一覧 ＆ 参加日ログ</h3>
-          <button onclick="clearAllDataConfirm()" class="text-[10px] text-red-400 border border-red-500/30 px-2 py-0.5 rounded hover:bg-red-500/10">データ初期化</button>
-        </div>
-        <div id="participants-log-container" class="space-y-2 text-xs"></div>
-      </div>
-    </section>
-
+      <p id="admin-auth-error" class="text-xs text-red-500 font-bold hidden">※パスコードが正しくありません</p>
+    </div>
   </div>
 
-  <!-- カメラモーダル -->
-  <div id="camera-modal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-slate-900 rounded-2xl overflow-hidden relative border border-slate-700">
-      <button onclick="stopQRScanner()" class="absolute top-3 right-3 text-white bg-slate-800/80 rounded-full w-8 h-8 flex items-center justify-center z-10"><i class="fa-solid fa-xmark"></i></button>
-      <div id="reader" class="w-full bg-black min-h-[280px]"></div>
+  <!-- メインダッシュボードエリア -->
+  <div id="admin-content" class="hidden max-w-5xl mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- ヘッダー -->
+    <header class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-gradient-to-tr from-red-500 to-orange-500 text-white rounded-2xl flex items-center justify-center text-2xl shadow-md">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-bold bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full">鳥取本通り商店街</span>
+          <h1 class="text-lg font-black text-slate-900 mt-0.5">デジタルスタンプラリー リアルタイム管理画面</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="fetchData()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl text-xs flex items-center gap-1.5 shadow-sm transition">
+          <i class="fa-solid fa-rotate-right" id="refresh-icon"></i> データを更新
+        </button>
+        <button onclick="location.href='index.html'" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-xl text-xs transition">
+          アプリ画面へ
+        </button>
+      </div>
+    </header>
+
+    <!-- 概要・残枠数カード (サマリー) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+      <!-- 200人中残り枠数 -->
+      <div class="bg-gradient-to-br from-red-500 to-orange-500 text-white p-5 rounded-3xl shadow-lg relative overflow-hidden space-y-2">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-bold text-white/80">🎁 先着200名様フローラチケット</p>
+            <h3 class="text-xs font-bold mt-1 text-white/90">残り交換可能枠数</h3>
+          </div>
+          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-ticket"></i>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2 pt-1">
+          <span id="stat-remaining" class="text-4xl font-black">200</span>
+          <span class="text-sm font-bold text-white/90">/ 200 人分</span>
+        </div>
+        <div class="w-full bg-black/20 h-2 rounded-full overflow-hidden">
+          <div id="stat-progress-bar" class="bg-white h-full w-0 transition-all duration-500"></div>
+        </div>
+        <p id="stat-progress-text" class="text-[10px] text-white/80 text-right">引き換え率: 0%</p>
+      </div>
+
+      <!-- 特典引き換え完了数 -->
+      <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-bold text-slate-400">実績</p>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">特典引き換え完了数</h3>
+          </div>
+          <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2 pt-2">
+          <span id="stat-redeemed" class="text-3xl font-black text-emerald-600">0</span>
+          <span class="text-xs font-bold text-slate-500">名</span>
+        </div>
+        <p class="text-[11px] text-slate-400">500円券をお渡しした人数</p>
+      </div>
+
+      <!-- 総参加者数 -->
+      <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-2">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-bold text-slate-400">参加状況</p>
+            <h3 class="text-sm font-bold text-slate-800 mt-0.5">総スタンプラリー参加者</h3>
+          </div>
+          <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-users"></i>
+          </div>
+        </div>
+        <div class="flex items-baseline gap-2 pt-2">
+          <span id="stat-participants" class="text-3xl font-black text-blue-600">0</span>
+          <span class="text-xs font-bold text-slate-500">名</span>
+        </div>
+        <p id="last-updated-time" class="text-[11px] text-slate-400">最終更新: 未取得</p>
+      </div>
+
     </div>
+
+    <!-- テーブル＆検索コントロール -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden space-y-4 p-5">
+
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 border-slate-100">
+        <div>
+          <h2 class="font-black text-slate-800 text-base flex items-center gap-2">
+            <i class="fa-solid fa-table-list text-red-500"></i> スプレッドシート同期データ一覧
+          </h2>
+          <p class="text-xs text-slate-500">LINEユーザー名や引き換えステータスをリアルタイムで一覧表示します</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="text" id="search-input" onkeyup="filterTable()" placeholder="名前やIDで検索..." class="px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-red-500 w-48">
+          <select id="status-filter" onchange="filterTable()" class="px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-red-500 text-slate-600 bg-white">
+            <option value="all">すべての状態</option>
+            <option value="引換完了">引換完了</option>
+            <option value="未引換">未引換</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- テーブル本体 -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
+              <th class="py-3 px-3 font-bold">日時</th>
+              <th class="py-3 px-3 font-bold">LINEユーザー名</th>
+              <th class="py-3 px-3 font-bold">LINEユーザーID</th>
+              <th class="py-3 px-3 font-bold text-center">スタンプ数</th>
+              <th class="py-3 px-3 font-bold">獲得店舗</th>
+              <th class="py-3 px-3 font-bold text-center">引き換え状況</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="6" class="text-center py-8 text-slate-400">
+                <i class="fa-solid fa-spinner fa-spin mr-2"></i> データを読み込み中...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
-    const stores = [
-      { id: "store_01", name: "砂田園茶舗" },
-      { id: "store_02", name: "ビストロ フライパン" },
-      { id: "store_03", name: "cafe SOURCE" },
-      { id: "store_04", name: "元気酒場 はれるや" },
-      { id: "store_05", name: "dining&cafebar break" },
-      { id: "store_06", name: "灯宴暁本店" },
-      { id: "store_07", name: "和牛ステーキ千里" },
-      { id: "store_08", name: "ふじもとカバン店" },
-      { id: "store_09", name: "(有)楠衡器製作所" },
-      { id: "store_10", name: "林ほんどおり薬局" },
-      { id: "store_11", name: "まちパル鳥取（鳥取市ふるさと物産館本店）" },
-      { id: "store_12", name: "ファミリーマート パレットとっとり店" },
-      { id: "store_13", name: "金田氷店" },
-      { id: "store_14", name: "さんフレッシュいなば" },
-      { id: "store_15", name: "すぺーすComodo" },
-      { id: "store_16", name: "五行易" }
-    ];
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycb..." // ここにGASのWeb App URLを設定;
+    const ADMIN_PASSCODE = "1234";
 
-    let participants = JSON.parse(localStorage.getItem("tottori_participants_data")) || [
-      { id: "user_01", name: "鳥取 太郎", date: "2026/10/25", stamps: ["store_01", "store_03", "store_07", "store_11", "store_12"], redeemed: true },
-      { id: "user_02", name: "因幡 はなこ", date: "2026/10/25", stamps: ["store_01", "store_02", "store_03"], redeemed: false },
-      { id: "user_03", name: "本通り サトシ", date: "2026/10/26", stamps: ["store_01", "store_05", "store_07", "store_10", "store_14"], redeemed: true }
-    ];
+    let rawData = [];
 
-    let html5QrCode = null;
+    document.addEventListener("DOMContentLoaded", () => {
+      const savedAuth = sessionStorage.getItem("admin_auth");
+      if (savedAuth === "true") {
+        document.getElementById("admin-auth-modal").classList.add("hidden");
+        document.getElementById("admin-content").classList.remove("hidden");
+        fetchData();
+      }
+    });
 
-    function loginAdmin() {
-      const pin = document.getElementById("admin-pin-input").value;
-      if (pin === "7777" || pin === "1234") {
-        document.getElementById("admin-login-screen").classList.add("hidden");
-        document.getElementById("admin-main-content").classList.remove("hidden");
-        renderDashboard();
+    function checkAdminPass() {
+      const input = document.getElementById("admin-pass-input").value;
+      if (input === ADMIN_PASSCODE) {
+        sessionStorage.setItem("admin_auth", "true");
+        document.getElementById("admin-auth-modal").classList.add("hidden");
+        document.getElementById("admin-content").classList.remove("hidden");
+        fetchData();
       } else {
-        alert("パスコードが間違っています。");
+        document.getElementById("admin-auth-error").classList.remove("hidden");
       }
     }
 
-    function renderDashboard() {
-      const redeemedCount = participants.filter(p => p.redeemed).length;
-      const remainingQuota = Math.max(0, 200 - redeemedCount);
+    async function fetchData() {
+      const refreshIcon = document.getElementById("refresh-icon");
+      if (refreshIcon) refreshIcon.classList.add("fa-spin");
 
-      document.getElementById("kpi-redeemed-count").innerText = redeemedCount;
-      document.getElementById("kpi-remaining-quota").innerText = remainingQuota;
-      document.getElementById("kpi-redeem-progress").style.width = `${(redeemedCount / 200) * 100}%`;
-      document.getElementById("kpi-total-participants").innerText = participants.length;
+      // localStorageのデータ（ローカルバックアップ）も読み込み準備
+      let localParticipants = JSON.parse(localStorage.getItem("tottori_participants_data")) || [];
 
-      const visits = {};
-      stores.forEach(s => visits[s.id] = 0);
-      participants.forEach(p => {
-        (p.stamps || []).forEach(sId => { if (visits[sId] !== undefined) visits[sId]++; });
-      });
-
-      let maxCount = -1;
-      let topStore = "なし";
-      stores.forEach(s => {
-        if (visits[s.id] > maxCount) {
-          maxCount = visits[s.id];
-          topStore = s.name;
-        }
-      });
-      document.getElementById("kpi-top-store-name").innerText = `${topStore} (${maxCount}回)`;
-
-      const sorted = [...stores].sort((a, b) => visits[b.id] - visits[a.id]);
-      const rankingContainer = document.getElementById("store-ranking-container");
-      rankingContainer.innerHTML = sorted.map((s, idx) => {
-        const count = visits[s.id];
-        const percent = participants.length > 0 ? Math.round((count / participants.length) * 100) : 0;
-        return `
-          <div class="space-y-1">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-200"><span class="w-5 inline-block text-slate-500 font-black">${idx + 1}.</span> ${s.name}</span>
-              <span class="font-extrabold text-orange-400">${count} 名 <span class="text-[10px] text-slate-500 font-normal">(${percent}%)</span></span>
-            </div>
-            <div class="w-full bg-slate-700 h-2 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-orange-400 to-red-500 h-full" style="width: ${percent}%"></div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const logContainer = document.getElementById("participants-log-container");
-      logContainer.innerHTML = participants.map(u => {
-        const sCount = (u.stamps || []).length;
-        return `
-          <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/80 flex justify-between items-center">
-            <div>
-              <p class="font-bold text-white text-xs">${u.name}</p>
-              <p class="text-[10px] text-slate-400">参加日: ${u.date} / 獲得スタンプ: <span class="font-bold text-red-400">${sCount}</span>/5</p>
-            </div>
-            <div>
-              ${u.redeemed ? `
-                <span class="bg-slate-700 text-slate-400 font-bold px-2.5 py-1 rounded-lg text-[10px]">引換済み</span>
-              ` : sCount >= 5 ? `
-                <button onclick="approveRedeem('\${u.id}')" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-1 rounded-lg text-[10px] shadow">承認（消込）</button>
-              ` : `
-                <span class="text-slate-500 text-[10px]">進行中 (\${sCount}/5)</span>
-              `}
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const manualList = document.getElementById("manual-approval-list");
-      const readyList = participants.filter(u => (u.stamps || []).length >= 5 && !u.redeemed);
-      if (readyList.length === 0) {
-        manualList.innerHTML = `<p class="text-[11px] text-slate-500 text-center py-2">現在、未承認の達成者はいません。</p>`;
-      } else {
-        manualList.innerHTML = readyList.map(u => `
-          <div class="bg-orange-500/10 border border-orange-500/30 p-2.5 rounded-xl flex justify-between items-center text-xs">
-            <div>
-              <p class="font-extrabold text-white">${u.name}</p>
-              <p class="text-[10px] text-orange-400">🎉 5スタンプ達成済み！</p>
-            </div>
-            <button onclick="approveRedeem('${u.id}')" class="bg-red-500 hover:bg-red-600 text-white font-black px-3 py-1.5 rounded-lg shadow text-xs">承認（500円券渡し）</button>
-          </div>
-        `).join("");
-      }
-    }
-
-    function showAdminSection(sec) {
-      ['scan', 'analytics', 'users'].forEach(s => {
-        document.getElementById(`section-${s}`).classList.add('hidden');
-        document.getElementById(`tab-btn-${s}`).className = "flex-1 py-2 rounded-lg text-slate-400 hover:text-white transition";
-      });
-      document.getElementById(`section-${sec}`).classList.remove('hidden');
-      document.getElementById(`tab-btn-${sec}`).className = "flex-1 py-2 rounded-lg bg-red-500 text-white font-black transition";
-    }
-
-    function approveRedeem(userId) {
-      const user = participants.find(p => p.id === userId);
-      if (user) {
-        if (confirm(`${user.name} さんの 500円分チケット引換を承認（消込）しますか？`)) {
-          user.redeemed = true;
-          if (userId === "my_user_id") {
-            localStorage.setItem("tottori_redeemed", "true");
+      if (GAS_WEBAPP_URL && GAS_WEBAPP_URL !== "") {
+        try {
+          const res = await fetch(GAS_WEBAPP_URL);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.rows) {
+              rawData = data.rows;
+              renderDashboard(data.totalRedeemed, data.remaining, data.totalParticipants, data.rows);
+              if (refreshIcon) refreshIcon.classList.remove("fa-spin");
+              return;
+            }
           }
-          localStorage.setItem("tottori_participants_data", JSON.stringify(participants));
-          renderDashboard();
-          alert("承認が完了しました！");
+        } catch (e) {
+          console.log("GAS fetch notice, fallback to local:", e);
         }
       }
+
+      // フォールバック（ローカルストレージデータの表示）
+      let redeemedCount = localParticipants.filter(p => p.redeemed === true || p.redeemed === "引換完了").length;
+      let rows = localParticipants.map(p => ({
+        timestamp: p.date || new Date().toLocaleDateString('ja-JP'),
+        displayName: p.name || "参加者ユーザー",
+        userId: p.id || "未取得ID",
+        stampsCount: p.stamps ? p.stamps.length : 0,
+        stampsList: p.stamps ? p.stamps.join(", ") : "",
+        redeemed: (p.redeemed === true || p.redeemed === "引換完了") ? "引換完了" : "未引換"
+      }));
+
+      rawData = rows;
+      renderDashboard(redeemedCount, Math.max(0, 200 - redeemedCount), rows.length, rows);
+      if (refreshIcon) refreshIcon.classList.remove("fa-spin");
     }
 
-    async function startQRScanner() {
-      document.getElementById("camera-modal").classList.remove("hidden");
-      if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
-      try {
-        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 } }, (decodedText) => {
-          stopQRScanner();
-          const target = participants.find(u => !u.redeemed && (u.stamps || []).length >= 5) || participants[0];
-          if (target) {
-            approveRedeem(target.id);
-          }
-        });
-      } catch (err) { stopQRScanner(); }
+    function renderDashboard(redeemedCount, remainingCount, totalCount, rows) {
+      document.getElementById("stat-redeemed").innerText = redeemedCount;
+      document.getElementById("stat-remaining").innerText = remainingCount;
+      document.getElementById("stat-participants").innerText = totalCount;
+
+      const rate = Math.min(100, Math.round((redeemedCount / 200) * 100));
+      document.getElementById("stat-progress-bar").style.width = `${rate}%`;
+      document.getElementById("stat-progress-text").innerText = `引き換え率: ${rate}% (達成 ${redeemedCount} / 200)`;
+
+      const now = new Date();
+      document.getElementById("last-updated-time").innerText = `最終更新: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+      renderTable(rows);
     }
 
-    function stopQRScanner() {
-      if (html5QrCode && html5QrCode.isScanning) {
-        html5QrCode.stop().then(() => document.getElementById("camera-modal").classList.add("hidden")).catch(() => {});
-      } else {
-        document.getElementById("camera-modal").classList.add("hidden");
+    function renderTable(rows) {
+      const tbody = document.getElementById("table-body");
+      if (!tbody) return;
+
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">データがまだ登録されていません</td></tr>`;
+        return;
       }
+
+      tbody.innerHTML = rows.map(r => {
+        const isRedeemed = r.redeemed === "引換完了" || r.redeemed === true;
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="py-3 px-3 text-slate-500 whitespace-nowrap">${r.timestamp || '-'}</td>
+            <td class="py-3 px-3 font-bold text-slate-800">${r.displayName || '未設定'}</td>
+            <td class="py-3 px-3 text-slate-400 font-mono text-[10px]">${r.userId || '-'}</td>
+            <td class="py-3 px-3 text-center font-black ${r.stampsCount >= 5 ? 'text-orange-600' : 'text-slate-700'}">${r.stampsCount || 0} / 5</td>
+            <td class="py-3 px-3 text-slate-600 text-[11px] max-w-xs truncate">${r.stampsList || '-'}</td>
+            <td class="py-3 px-3 text-center">
+              ${isRedeemed 
+                ? '<span class="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-full text-[10px] shadow-sm"><i class="fa-solid fa-check mr-1"></i>引換完了</span>'
+                : '<span class="bg-slate-100 text-slate-500 font-medium px-2.5 py-1 rounded-full text-[10px]">未引換</span>'
+              }
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    function clearAllDataConfirm() {
-      if (confirm("全データをリセットしますか？")) {
-        participants = [];
-        localStorage.removeItem("tottori_participants_data");
-        renderDashboard();
-      }
+    function filterTable() {
+      const search = document.getElementById("search-input").value.toLowerCase();
+      const status = document.getElementById("status-filter").value;
+
+      const filtered = rawData.filter(r => {
+        const matchSearch = (r.displayName && r.displayName.toLowerCase().includes(search)) ||
+                            (r.userId && r.userId.toLowerCase().includes(search));
+        const matchStatus = status === "all" || r.redeemed === status;
+        return matchSearch && matchStatus;
+      });
+
+      renderTable(filtered);
     }
   </script>
 </body>
