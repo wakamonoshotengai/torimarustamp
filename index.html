@@ -204,8 +204,8 @@
         <div class="flex gap-3 items-start bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
           <div class="w-7 h-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black flex-shrink-0 text-sm">3</div>
           <div>
-            <p class="font-bold text-gray-800">5個集めてアンケート回答後、500円券と交換！</p>
-            <p class="text-[11px] text-gray-600 mt-0.5">スタンプが5個集まったら、必須アンケートに回答して表示されるQRコードを「まちパル鳥取」のスタッフに見せよう！（先着200名様）</p>
+            <p class="font-bold text-gray-800">5個集めてアンケート回答後、スタッフにパスコードを入力してもらう！</p>
+            <p class="text-[11px] text-gray-600 mt-0.5">スタンプが5個集まったら、必須アンケートに回答し、「まちパル鳥取」のスタッフに画面でパスコード（4桁）を入力してもらおう！（先着200名様）</p>
           </div>
         </div>
       </div>
@@ -248,7 +248,7 @@
     <!-- 引換完了後の通知メッセージ（カードタブ） -->
     <section id="scanner-completed-message" class="hidden bg-slate-800 text-white p-4 rounded-2xl text-center space-y-1 shadow-md">
       <p class="text-xs font-bold text-amber-400"><i class="fa-solid fa-circle-check"></i> 特典引き換え完了済み</p>
-      <p class="text-[11px] text-slate-300">スタンプラリー特典の引き換えが完了したため、QRコードのスキャン機能は終了いたしました。ご参加ありがとうございました！</p>
+      <p class="text-[11px] text-slate-300">スタンプラリー特典の引き換えが完了したため、追加スキャン機能は無効化されています。ご参加ありがとうございました！</p>
     </section>
 
     <!-- GPS設定切り替えスイッチ (動作テスト用) -->
@@ -330,7 +330,7 @@
         </p>
       </div>
 
-      <!-- 動的表示ボックス（アンケート未回答／アンケート回答済／引き換え完了） -->
+      <!-- 動的表示ボックス（アンケート未回答／パスコード入力／引き換え完了） -->
       <div id="reward-claim-box" class="pt-2"></div>
     </div>
 
@@ -354,8 +354,8 @@
           <span><strong>受付時間：</strong>9:00 〜 19:00<br><span class="text-[10px] text-slate-500">※イベント期間中はいつでも交換可能です。</span></span>
         </p>
         <p class="flex items-start gap-2">
-          <i class="fa-solid fa-mobile-screen-button text-emerald-500 mt-0.5"></i>
-          <span><strong>換金方法：</strong>必須アンケート回答後に表示されるQRコードをスタッフにお見せください。</span>
+          <i class="fa-solid fa-key text-emerald-500 mt-0.5"></i>
+          <span><strong>換金方法：</strong>必須アンケート回答後、スタッフに画面を提示してパスコードを入力してもらってください。</span>
         </p>
       </div>
 
@@ -372,7 +372,7 @@
       <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside leading-relaxed pl-1">
         <li>チケットの引換は原則１名様につき1回のみです。</li>
         <li>景品獲得前に必須アンケートフォームへのご回答が必要です。</li>
-        <li>引き換え完了後は、QRコードの再表示やスキャンはできなくなります。</li>
+        <li>一度引き換えを完了すると、再引き換えはできません。</li>
         <li>先着200名様に達し次第、引き換えは終了となります。</li>
       </ul>
     </div>
@@ -470,6 +470,7 @@
   <script>
     const MY_LIFF_ID = "2012069860-oCSLG2tJ"; 
     const GAS_WEBAPP_URL = ""; 
+    const STAFF_PASSCODE = "1234"; // スタッフ消込用パスコード
 
     const stores = [
       { id: "store_01", name: "砂田園茶舗", category: "食品店（お茶・日本茶）", secret: "【実は】店内にある5玉そろばん、現在は普通に使っているんです", detail: "店内にある貴重な歴史ある「5玉そろばん」。現在の店主のおばあちゃんは普通のそろばんと同じように使っているという可愛らしい一面も！", imageUrl: "砂田園.jpg", fallbackImage: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80", mapUrl: "https://maps.google.com/?q=35.498050,134.229800", siteUrl: "https://hondohri.com/store/193/", lat: 35.498050, lng: 134.229800 },
@@ -493,6 +494,8 @@
     let acquiredStamps = JSON.parse(localStorage.getItem("tottori_stamps")) || [];
     let isLineAuthenticated = localStorage.getItem("tottori_line_auth") === "true";
     let isRedeemed = localStorage.getItem("tottori_redeemed") === "true";
+    let isFormOpened = localStorage.getItem("tottori_form_opened") === "true";
+    
     let currentUserName = localStorage.getItem("tottori_user_name") || "参加者ユーザー";
     let currentUserId = localStorage.getItem("tottori_user_id") || "my_user_id";
 
@@ -552,10 +555,12 @@
           isLineAuthenticated = true;
           localStorage.setItem("tottori_line_auth", "true");
           const profile = await liff.getProfile();
-          currentUserName = profile.displayName;
-          currentUserId = profile.userId;
-          localStorage.setItem("tottori_user_name", currentUserName);
-          localStorage.setItem("tottori_user_id", currentUserId);
+          if (profile && profile.displayName) {
+            currentUserName = profile.displayName;
+            currentUserId = profile.userId;
+            localStorage.setItem("tottori_user_name", currentUserName);
+            localStorage.setItem("tottori_user_id", currentUserId);
+          }
 
           document.getElementById("menu-user-name").innerText = `連携済: ${currentUserName} 様`;
           document.getElementById("initial-line-overlay").classList.add("hidden");
@@ -748,8 +753,8 @@
               <div class="flex gap-2 pt-1">
                 <button onclick="openModal('${store.id}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition">詳細・マップを見る</button>
                 ${hasUrl ? `
-                  <a href="\${store.siteUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 \${isInsta ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' : 'bg-orange-500'} text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1">
-                    <i class="\\({isInsta ? 'fa-brands fa-instagram' : 'fa-solid fa-file-lines'}"></i> \\){isInsta ? 'Instagramへ' : '紹介ページへ'}
+                  <a href="${store.siteUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 ${isInsta ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400' : 'bg-orange-500'} text-white font-bold py-2 rounded-xl text-xs text-center transition flex items-center justify-center gap-1">
+                    <i class="${isInsta ? 'fa-brands fa-instagram' : 'fa-solid fa-file-lines'}"></i> ${isInsta ? 'Instagramへ' : '紹介ページへ'}
                   </a>
                 ` : ''}
               </div>
@@ -869,6 +874,7 @@
     }
 
     function processStamp(storeId) {
+      if (isRedeemed) return;
       if (!acquiredStamps.includes(storeId)) {
         acquiredStamps.push(storeId);
         localStorage.setItem("tottori_stamps", JSON.stringify(acquiredStamps));
@@ -899,11 +905,67 @@
       document.getElementById("progress-bar").style.width = `${(visibleCount / 5) * 100}%`;
     }
 
-    // 特典換金表示（必須アンケート回答チェック ＆ 提示用QR表示 ＆ 引き換え完了お祝い）
+    // アンケートリンククリック時のイベント記録
+    function onFormLinkClicked() {
+      isFormOpened = true;
+      localStorage.setItem("tottori_form_opened", "true");
+      
+      const chk = document.getElementById("form-confirm-checkbox");
+      const note = document.getElementById("form-checkbox-note");
+      if (chk) chk.disabled = false;
+      if (note) {
+        note.innerText = "※アンケートフォームの参照を確認しました。回答後チェックを入れてください。";
+        note.className = "text-[10px] font-bold text-emerald-600";
+      }
+    }
+
+    // チェックボックス変更時
+    function toggleFormConfirmBtn() {
+      const chk = document.getElementById("form-confirm-checkbox");
+      const passcodeContainer = document.getElementById("passcode-input-container");
+      
+      if (chk && passcodeContainer) {
+        if (chk.checked && isFormOpened) {
+          passcodeContainer.classList.remove("hidden");
+        } else {
+          passcodeContainer.classList.add("hidden");
+        }
+      }
+    }
+
+    // スタッフ用パスコード入力による消込（引き換え実行）
+    function submitStaffPasscode() {
+      if (isRedeemed) {
+        alert("すでに引き換えが完了しています。");
+        return;
+      }
+
+      const inputEl = document.getElementById("staff-passcode-input");
+      const inputVal = inputEl ? inputEl.value.trim() : "";
+
+      if (inputVal === STAFF_PASSCODE) {
+        isRedeemed = true;
+        localStorage.setItem("tottori_redeemed", "true");
+        
+        // 即座にログ更新＆スプレッドシート送信
+        registerCurrentUserLog();
+        
+        // 画面表示更新
+        renderRewardBox();
+        updateScannerUIStatus();
+        
+        alert("🎉 消込（引き換え）が正常に完了しました！\n500円分フローラチケットをお渡しください。");
+      } else {
+        alert("❌ パスコードが違います。スタッフにお確かめの上、正しい4桁の数字を入力してください。");
+      }
+    }
+
+    // 特典換金表示（パスコード消込方式 ＆ アクション限定化 ＆ 一度のみの制御）
     function renderRewardBox() {
       const box = document.getElementById("reward-claim-box");
       if (!box) return;
 
+      // 重複引き換え防止：すでに使用済みの場合は祝福カードのみを表示
       if (isRedeemed) {
         box.innerHTML = `
           <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-amber-400 p-5 rounded-2xl text-center space-y-3 shadow-md animate-fade-in">
@@ -920,8 +982,8 @@
                 ぜひフローラチケットを使って、鳥取本通り商店街でのお買い物やカフェ・お食事をお楽しみください。
               </p>
             </div>
-            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-200 text-[10px] text-slate-500">
-              ※セキュリティのため、提示用QRコードは非表示となりました。
+            <div class="bg-white/80 p-2.5 rounded-xl border border-amber-200 text-[10px] text-slate-500 font-bold">
+              ※このチケットはすでに引き換え済み（消込完了）です。
             </div>
           </div>
         `;
@@ -929,60 +991,50 @@
       }
 
       if (acquiredStamps.length >= 5) {
-        let isFormAnswered = localStorage.getItem("tottori_form_answered") === "true";
+        box.innerHTML = `
+          <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-orange-300 p-5 rounded-2xl space-y-4 shadow-md text-left">
+            <div class="text-center">
+              <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow animate-pulse">
+                🎉 5スタンプ達成！おめでとうございます！
+              </span>
+              <h4 class="font-extrabold text-slate-800 text-sm mt-2">景品獲得ステップ</h4>
+            </div>
 
-        if (!isFormAnswered) {
-          box.innerHTML = `
-            <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-orange-300 p-5 rounded-2xl space-y-4 shadow-md text-left">
-              <div class="text-center">
-                <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow animate-pulse">
-                  🎉 5スタンプ達成！おめでとうございます！
-                </span>
-                <h4 class="font-extrabold text-slate-800 text-sm mt-2">景品獲得前の必須アンケート</h4>
-                <p class="text-[11px] text-slate-600 mt-0.5">特典（500円分チケット）引き換えの前に、以下のアンケートフォームにご回答ください。</p>
-              </div>
+            <!-- ステップ1: 必須アンケート -->
+            <div class="bg-white p-3.5 rounded-xl border border-orange-200 space-y-2">
+              <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-pen-to-square text-orange-500"></i> 【ステップ1】必須アンケートフォーム
+              </p>
+              <a href="https://forms.gle/A2XnDRMM5HzzBSyJ7" target="_blank" rel="noopener noreferrer" onclick="onFormLinkClicked()" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> 必須アンケートフォームを開く
+              </a>
+              <p id="form-checkbox-note" class="text-[10px] text-slate-400">
+                ${isFormOpened ? '※アンケートフォームの参照を確認しました。回答後チェックを入れてください。' : '※上のボタンを押してアンケートフォームを開くと下のチェックボックスが有効になります。'}
+              </p>
+              <label class="flex items-center gap-2 mt-1 cursor-pointer bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                <input type="checkbox" id="form-confirm-checkbox" onchange="toggleFormConfirmBtn()" ${isFormOpened ? '' : 'disabled'} class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-400">
+                <span class="text-xs font-bold text-slate-700">アンケートに回答しました</span>
+              </label>
+            </div>
 
-              <div class="bg-white p-3.5 rounded-xl border border-orange-200 space-y-2">
-                <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <i class="fa-solid fa-pen-to-square text-orange-500"></i> 【ステップ1】フォーム回答
-                </p>
-                <a href="https://forms.gle/A2XnDRMM5HzzBSyJ7" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:opacity-95 text-white font-extrabold py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i> 必須アンケートフォームを開く
-                </a>
-              </div>
-
-              <div class="bg-white p-3.5 rounded-xl border border-orange-200 space-y-2">
-                <p class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <i class="fa-solid fa-qrcode text-emerald-500"></i> 【ステップ2】提示用QRコードの表示
-                </p>
-                <p class="text-[11px] text-slate-500">アンケート回答後、下のチェックボックスを有効にして「提示用QRコードを表示」を押してください。</p>
-                <label class="flex items-center gap-2 mt-2 cursor-pointer bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                  <input type="checkbox" id="form-confirm-checkbox" onchange="toggleFormConfirmBtn()" class="w-4 h-4 text-orange-500 rounded border-slate-300 focus:ring-orange-400">
-                  <span class="text-xs font-bold text-slate-700">アンケートに回答しました</span>
-                </label>
-                <button id="show-qr-btn" onclick="confirmFormAndShowQR()" disabled class="w-full bg-slate-300 text-slate-500 font-bold py-2.5 rounded-xl text-xs transition cursor-not-allowed">
-                  提示用QRコードを表示する
+            <!-- ステップ2: スタッフパスコード入力フォーム (消込) -->
+            <div id="passcode-input-container" class="hidden bg-white p-4 rounded-xl border-2 border-emerald-400 space-y-3 animate-fade-in">
+              <p class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-shield text-emerald-600"></i> 【ステップ2】スタッフ用消込確認
+              </p>
+              <p class="text-[11px] text-slate-600">
+                「まちパル鳥取」のスタッフに画面をお見せいただき、スタッフ用パスコードを入力してもらってください。
+              </p>
+              
+              <div class="space-y-2 pt-1">
+                <input type="password" id="staff-passcode-input" placeholder="スタッフ用パスコード (4桁)" maxlength="10" class="w-full text-center text-base tracking-widest font-bold border-2 border-slate-300 rounded-xl py-2.5 focus:border-emerald-500 focus:outline-none">
+                <button onclick="submitStaffPasscode()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-3 rounded-xl text-xs shadow-md transition">
+                  <i class="fa-solid fa-check-double mr-1"></i> 引き換える（消込を実行）
                 </button>
               </div>
             </div>
-          `;
-        } else {
-          const qrData = JSON.stringify({ userId: currentUserId, userName: currentUserName, stamps: acquiredStamps.length });
-          const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
-
-          box.innerHTML = `
-            <div class="bg-gradient-to-b from-amber-50 to-orange-50 border-2 border-orange-300 p-4 rounded-2xl text-center space-y-3">
-              <span class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow">
-                🎉 5スタンプ達成！おめでとうございます！
-              </span>
-              <p class="text-xs font-bold text-slate-800">【スタッフ提示用 QRコード】</p>
-              <div class="bg-white p-3 rounded-2xl inline-block shadow-inner border border-orange-200">
-                <img src="${qrImgUrl}" alt="消込用QRコード" class="w-36 h-36 mx-auto">
-              </div>
-              <p class="text-[11px] text-slate-600 font-bold">下記の「まちパル鳥取」スタッフにこの画面をお見せください。</p>
-            </div>
-          `;
-        }
+          </div>
+        `;
       } else {
         box.innerHTML = `
           <div class="bg-slate-50 p-3.5 rounded-xl border text-center space-y-1">
@@ -991,25 +1043,6 @@
           </div>
         `;
       }
-    }
-
-    function toggleFormConfirmBtn() {
-      const chk = document.getElementById("form-confirm-checkbox");
-      const btn = document.getElementById("show-qr-btn");
-      if (chk && btn) {
-        if (chk.checked) {
-          btn.disabled = false;
-          btn.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-2.5 rounded-xl text-xs transition shadow-sm cursor-pointer";
-        } else {
-          btn.disabled = true;
-          btn.className = "w-full bg-slate-300 text-slate-500 font-bold py-2.5 rounded-xl text-xs transition cursor-not-allowed";
-        }
-      }
-    }
-
-    function confirmFormAndShowQR() {
-      localStorage.setItem("tottori_form_answered", "true");
-      renderRewardBox();
     }
   </script>
 </body>
