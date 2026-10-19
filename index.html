@@ -496,8 +496,9 @@
     let isRedeemed = localStorage.getItem("tottori_redeemed") === "true";
     let isFormOpened = localStorage.getItem("tottori_form_opened") === "true";
     
-    let currentUserName = localStorage.getItem("tottori_user_name") || "参加者ユーザー";
-    let currentUserId = localStorage.getItem("tottori_user_id") || "my_user_id";
+    let currentUserId = localStorage.getItem("tottori_user_id") || ("guest_" + Math.random().toString(36).substring(2, 9));
+    let currentUserName = localStorage.getItem("tottori_user_name") || "";
+    localStorage.setItem("tottori_user_id", currentUserId);
 
     // GPS判定フラグ（デフォルト: ON = true）
     let isGpsEnabled = localStorage.getItem("tottori_gps_enabled") !== "false";
@@ -505,11 +506,13 @@
     let html5QrCode = null;
     let participantsData = JSON.parse(localStorage.getItem("tottori_participants_data")) || [];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initLiffSDK();
+    document.addEventListener("DOMContentLoaded", async () => {
+      await initLiffSDK();
       checkInitialLineAuth();
       checkUrlParameters();
-      registerCurrentUserLog();
+      if (isLineAuthenticated && currentUserName) {
+        registerCurrentUserLog();
+      }
       renderStamps();
       renderStoreCards();
       renderRewardBox();
